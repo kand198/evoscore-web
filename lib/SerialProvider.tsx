@@ -35,6 +35,7 @@ import {
     disconnect(): void;
     subscribe(callback: SerialMessageCallback): () => void;
     sendLine(s: string): void;
+    sendBuf(b: Uint8Array): void;
   }
   export const SerialContext = createContext<SerialContextValue>({
     canUseSerial: false,
@@ -44,6 +45,7 @@ import {
     portState: "closed",
     subscribe: () => () => {},
     sendLine: () => {},
+    sendBuf: () => {}
   });
   
   export const useSerial = () => useContext(SerialContext);
@@ -87,6 +89,18 @@ import {
         const a = textEncoder.encode(s + '\n');
         writer.write(a);
         writer.releaseLock();
+      }
+    };
+
+    const sendBuf = (b: Uint8Array) => {
+      try {
+        if (portRef.current.writable) {
+          const writer = portRef.current.writable.getWriter();
+          writer.write(b);
+          writer.releaseLock();
+        }
+      } catch (error) {
+        console.log(error);
       }
     };
   
@@ -264,7 +278,8 @@ import {
           portState,
           connect: manualConnectToPort,
           disconnect: manualDisconnectFromPort,
-          sendLine
+          sendLine,
+          sendBuf
         }}
       >
         {children}

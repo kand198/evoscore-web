@@ -16,7 +16,7 @@ import { emptyRequest } from '../lib/evo_proto';
 import { SerialMessage, useSerial } from '../lib/SerialProvider';
 
 const ECU = () => {
-  const { canUseSerial, portState, connect, disconnect, subscribe, sendLine } =
+  const { canUseSerial, portState, connect, disconnect, subscribe, sendLine, sendBuf } =
     useSerial();
   const [inputArray, setInputArray] = useState<string[]>([]);
   const inputArrayRef = useRef<string[]>([]);
@@ -28,7 +28,7 @@ const ECU = () => {
     const buf = emptyRequest();
     const s = Array.from(buf).map((c) => c.toString(16)).map((s) => s === '0' ? '00' : s).toString().replace(',','');
     console.log(s);
-    sendLine(s);
+    sendBuf(buf);
   };
 
   useEffect(() => {
