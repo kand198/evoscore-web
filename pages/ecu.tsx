@@ -2,45 +2,69 @@ import {
   Alert,
   Group,
   Stack,
-  Text,
+  Notification,
   Title,
   Button,
   ScrollArea,
   Code,
+  Loader,
 } from '@mantine/core';
 import Link from 'next/link';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { Check, X } from 'tabler-icons-react';
+import { emptyRequest } from '../lib/evo_proto';
 import { SerialMessage, useSerial } from '../lib/SerialProvider';
 
 const ECU = () => {
-  const {canUseSerial, portState, connect, disconnect, subscribe, sendLine} = useSerial();
+  const { canUseSerial, portState, connect, disconnect, subscribe, sendLine } =
+    useSerial();
   const [inputArray, setInputArray] = useState<string[]>([]);
   const inputArrayRef = useRef<string[]>([]);
+  const [notify, setNotify] = useState(false);
 
-  const test = useCallback((message: SerialMessage) => {
-    inputArrayRef.current.push(message.value);
-    setInputArray([...inputArrayRef.current]);
-  }, [inputArrayRef])
+  const closeNotification = () => setNotify(false);
+
+  const printEmptyThingy = () => {
+    const buf = emptyRequest();
+    const s = Array.from(buf).map((c) => c.toString(16)).map((s) => s === '0' ? '00' : s).toString().replace(',','');
+    console.log(s);
+    sendLine(s);
+  };
+
+  useEffect(() => {
+    setNotify(true);
+  }, [portState]);
+
+  const test = useCallback(
+    (message: SerialMessage) => {
+      inputArrayRef.current.push(message.value);
+      setInputArray([...inputArrayRef.current]);
+    },
+    [inputArrayRef]
+  );
 
   useEffect(() => {
     const unsub = subscribe(test);
     return () => {
       unsub();
     };
-  }, [subscribe, test])
-  
+  }, [subscribe, test]);
+
   useEffect(() => {
     inputArrayRef.current = inputArray;
-  }, [inputArray])
+  }, [inputArray]);
 
-  const input = useMemo(() => inputArray.length > 0 ? inputArray.reduce((s, a) => s.concat(a)) : '', [inputArray]);
+  const input = useMemo(
+    () =>
+      inputArray.length > 0 ? inputArray.reduce((s, a) => s.concat(a)) : '',
+    [inputArray]
+  );
 
   return (
-    <Stack>
+    <Stack className='relative h-full'>
       <Title order={1}>ECU Configurator</Title>
       {canUseSerial ? (
         <Stack>
-          <Text>Your browser is compatible!</Text>
           <Group>
             <Button className='bg-blue-600' onClick={() => connect()}>
               Connect
@@ -48,8 +72,11 @@ const ECU = () => {
             <Button className='bg-blue-600' onClick={() => disconnect()}>
               Disconnect
             </Button>
-            <Button className='bg-blue-600' onClick={() => sendLine("2200")}>
+            <Button className='bg-blue-600' onClick={() => sendLine('2200')}>
               Send
+            </Button>
+            <Button className='bg-blue-600' onClick={printEmptyThingy}>
+              Print demo
             </Button>
           </Group>
           <ScrollArea>
@@ -76,6 +103,38 @@ const ECU = () => {
           <br />
           If this problem persists, reach out on Slack for help!
         </Alert>
+      )}
+      {notify && portState === 'open' && (
+        <Notification
+          icon={<Check size={18} />}
+          color='teal'
+          title='Connected'
+          onClose={closeNotification}
+          className="absolute bottom-0 inset-x-0"
+        >
+          ECU Port Successfully Opened.
+        </Notification>
+      )}
+      {notify && portState === 'closed' && (
+        <Notification
+          icon={<X size={18} />}
+          color='red'
+          title='Disconnected'
+          onClose={closeNotification}
+          className="absolute bottom-0 inset-x-0"
+        >
+          ECU Port Closed.
+        </Notification>
+      )}
+      {notify && portState.includes('ing') && (
+        <Notification
+          loading
+          title='Waiting on Connection'
+          disallowClose
+          className="absolute bottom-0 inset-x-0"
+        >
+          {portState.charAt(0).toUpperCase() + portState.slice(1)} the ECU port.
+        </Notification>
       )}
     </Stack>
   );

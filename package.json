@@ -15,8 +15,11 @@
     "@mantine/next": "^4.2.10",
     "@types/w3c-web-serial": "^1.0.2",
     "next": "12.1.4",
+    "protobufjs": "^6.11.3",
     "react": "18.0.0",
-    "react-dom": "18.0.0"
+    "react-dom": "18.0.0",
+    "tabler-icons-react": "^1.51.0",
+    "ts-proto": "^1.115.5"
   },
   "browserslist": {
     "production": [
