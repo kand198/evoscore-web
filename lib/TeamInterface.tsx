@@ -18,3 +18,9 @@ export const emptyTeam = (): Team => {
     events: emptyEvents(),
   };
 };
+
+export const vehicleClassMap = new Map<VehicleClass, string>([
+  [VehicleClass.STANDARD, 'Standard'],
+  [VehicleClass.OPEN, 'Open'],
+  [VehicleClass.COMPETITION, 'Competition'],
+]);

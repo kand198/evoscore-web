@@ -16,19 +16,19 @@ const emptyRequest: Request = {
   status: undefined,
 };
 
-const getResetRequest = (): Request => {
+export const getResetRequest = (): Request => {
   return { ...emptyRequest, reset: {} };
 };
 
-const getConfigFetchRequest = (): Request => {
+export const getConfigFetchRequest = (): Request => {
   return { ...emptyRequest, config: {} };
 };
 
-const getConfigSetRequest = (content: ConfigContent): Request => {
+export const getConfigSetRequest = (content: ConfigContent): Request => {
   return { ...emptyRequest, config: { content } };
 };
 
-const getEnergyRequest = (
+export const getEnergyRequest = (
   startTimestamp: number,
   endTimestamp: number
 ): Request => {
@@ -38,21 +38,17 @@ const getEnergyRequest = (
   };
 };
 
-const getTimeFetchRequest = (): Request => {
+export const getTimeFetchRequest = (): Request => {
   return { ...emptyRequest, time: {} };
 };
 
-const getTimeSetRequest = (time: number): Request => {
+export const getTimeSetRequest = (time: number): Request => {
   return { ...emptyRequest, time: { time } };
 };
 
-const getStatusRequest = (time: number): Request => {
+export const getStatusRequest = (): Request => {
   return { ...emptyRequest, status: {} };
 };
-
-export const testRequest = () => {
-  return encodeRequest(getConfigFetchRequest());
-}
 
 export const encodeRequest = (RequestMessage: Request) => {
   return Request.encode(RequestMessage).finish();

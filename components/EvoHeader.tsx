@@ -29,7 +29,7 @@ const EvoHeader = (props: {
             mr='xl'
           />
         </MediaQuery>
-        <Text>EVolocity</Text>
+        <Text>EVoScore</Text>
       </div>
     </Header>
   );

@@ -181,7 +181,6 @@ const SerialProvider = ({
 
   const autoConnectToPort = async () => {
     if (canUseSerial && portState === 'closed') {
-      console.log('opening');
       setPortState('opening');
       const availablePorts = await navigator.serial.getPorts();
       if (availablePorts.length) {

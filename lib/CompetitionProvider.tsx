@@ -32,7 +32,10 @@ const CompetitionProvider = ({
   const getTeamIds = () => teams.map((t) => t.id);
 
   const addTeam = () => {
-    const newTeam = {...emptyTeam(), id: getTeamIds().reduce((maxId, id) => Math.max(maxId, id), -1) + 1};
+    const newTeam = {
+      ...emptyTeam(),
+      id: getTeamIds().reduce((maxId, id) => Math.max(maxId, id), -1) + 1,
+    };
     setTeams([...teams, newTeam]);
     return newTeam;
   };
@@ -56,7 +59,7 @@ const CompetitionProvider = ({
         teams,
         addTeam,
         removeTeam,
-        updateTeam
+        updateTeam,
       }}
     >
       {children}

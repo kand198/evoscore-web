@@ -14,13 +14,7 @@ import { useEffect, useState } from 'react';
 import { Plus } from 'tabler-icons-react';
 import { useCompetition } from '../lib/CompetitionProvider';
 import { VehicleClass } from '../lib/proto/evolocity';
-import Team from '../lib/TeamInterface';
-
-const vehicleClassMap = new Map<VehicleClass, string>([
-  [VehicleClass.STANDARD, "Standard"],
-  [VehicleClass.OPEN, "Open"],
-  [VehicleClass.COMPETITION, "Competition"],
-]);
+import Team, { vehicleClassMap } from '../lib/TeamInterface';
 
 const Teams = () => {
   const { teams, addTeam, removeTeam, updateTeam } = useCompetition();
@@ -44,9 +38,9 @@ const Teams = () => {
     name: string;
   }) => {
     console.log(values);
-    const {school, name} = values;
+    const { school, name } = values;
     const vehicleClass = parseInt(values.class);
-    const newEditTeam = {school, name, class: vehicleClass, id: editTeam.id };
+    const newEditTeam = { school, name, class: vehicleClass, id: editTeam.id };
     console.log(newEditTeam);
     updateTeam(newEditTeam);
     setEditTeam(undefined);
@@ -55,14 +49,14 @@ const Teams = () => {
   const deleteEditTeam = () => {
     removeTeam(editTeam);
     setEditTeam(undefined);
-  }
+  };
 
   const exitEdit = () => {
     if (editTeam.name === '' && editTeam.school === '') {
       removeTeam(editTeam);
     }
     setEditTeam(undefined);
-  }
+  };
 
   useEffect(() => {
     if (editTeam) {
@@ -88,7 +82,11 @@ const Teams = () => {
   const teamBody = (
     <tbody>
       {teams.map((team) => (
-        <tr key={team.id} className="hover:cursor-pointer" onClick={() => setEditTeam(team)}>
+        <tr
+          key={team.id}
+          className='hover:cursor-pointer'
+          onClick={() => setEditTeam(team)}
+        >
           <td>{team.id}</td>
           <td>{team.name}</td>
           <td>{team.school}</td>
@@ -144,12 +142,16 @@ const Teams = () => {
           />
           <Space h='md' />
           <Group className='justify-evenly'>
-          <Button type='submit' className='bg-blue-600 hover:bg-blue-800'>
-            Submit
-          </Button>
-          <Button type='button' className='bg-red-600 hover:bg-red-800' onClick={() => deleteEditTeam()}>
-            Delete
-          </Button>
+            <Button type='submit' className='bg-blue-600 hover:bg-blue-800'>
+              Submit
+            </Button>
+            <Button
+              type='button'
+              className='bg-red-600 hover:bg-red-800'
+              onClick={() => deleteEditTeam()}
+            >
+              Delete
+            </Button>
           </Group>
         </form>
       </Modal>
