@@ -1,14 +1,10 @@
 import React, { Children, useState } from 'react';
-import {
-  AppShell,
-  Footer,
-  useMantineTheme,
-} from '@mantine/core';
+import { AppShell, Footer, useMantineTheme } from '@mantine/core';
 import EvoHeader from './EvoHeader';
 import EvoNavbar from './EvoNavbar';
 
 type Props = {
-  children?: React.ReactNode
+  children?: React.ReactNode;
 };
 
 const EvoPage = (props) => {
@@ -19,15 +15,18 @@ const EvoPage = (props) => {
     <AppShell
       styles={{
         main: {
-          background: theme.colorScheme === 'dark' ? theme.colors.dark[8] : theme.colors.gray[0],
+          background:
+            theme.colorScheme === 'dark'
+              ? theme.colors.dark[8]
+              : theme.colors.gray[0],
         },
       }}
-      navbarOffsetBreakpoint="sm"
-      asideOffsetBreakpoint="sm"
+      navbarOffsetBreakpoint='sm'
+      asideOffsetBreakpoint='sm'
       fixed
       navbar={<EvoNavbar opened={opened} />}
       footer={
-        <Footer height={60} p="md">
+        <Footer height={60} p='md'>
           Copyright EVolocity. Created by Keith Anderson and Thomas Galbraith.
         </Footer>
       }

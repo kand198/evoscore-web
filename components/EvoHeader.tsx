@@ -1,4 +1,10 @@
-import { Burger, Header, MediaQuery, Text, useMantineTheme } from '@mantine/core';
+import {
+  Burger,
+  Header,
+  MediaQuery,
+  Text,
+  useMantineTheme,
+} from '@mantine/core';
 import Head from 'next/head';
 
 const EvoHeader = (props: {

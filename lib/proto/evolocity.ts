@@ -76,7 +76,7 @@ export interface TimeRequest {
 export interface StatusRequest {}
 
 /** Responses */
-export interface response {
+export interface Response {
   timestamp: number;
   uid: number;
   ack: Ack | undefined;
@@ -607,7 +607,7 @@ export const StatusRequest = {
   },
 };
 
-function createBaseresponse(): response {
+function createBaseResponse(): Response {
   return {
     timestamp: 0,
     uid: 0,
@@ -619,9 +619,9 @@ function createBaseresponse(): response {
   };
 }
 
-export const response = {
+export const Response = {
   encode(
-    message: response,
+    message: Response,
     writer: _m0.Writer = _m0.Writer.create()
   ): _m0.Writer {
     if (message.timestamp !== 0) {
@@ -648,10 +648,10 @@ export const response = {
     return writer;
   },
 
-  decode(input: _m0.Reader | Uint8Array, length?: number): response {
+  decode(input: _m0.Reader | Uint8Array, length?: number): Response {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseresponse();
+    const message = createBaseResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -684,7 +684,7 @@ export const response = {
     return message;
   },
 
-  fromJSON(object: any): response {
+  fromJSON(object: any): Response {
     return {
       timestamp: isSet(object.timestamp) ? Number(object.timestamp) : 0,
       uid: isSet(object.uid) ? Number(object.uid) : 0,
@@ -702,7 +702,7 @@ export const response = {
     };
   },
 
-  toJSON(message: response): unknown {
+  toJSON(message: Response): unknown {
     const obj: any = {};
     message.timestamp !== undefined &&
       (obj.timestamp = Math.round(message.timestamp));
@@ -726,8 +726,8 @@ export const response = {
     return obj;
   },
 
-  fromPartial<I extends Exact<DeepPartial<response>, I>>(object: I): response {
-    const message = createBaseresponse();
+  fromPartial<I extends Exact<DeepPartial<Response>, I>>(object: I): Response {
+    const message = createBaseResponse();
     message.timestamp = object.timestamp ?? 0;
     message.uid = object.uid ?? 0;
     message.ack =
