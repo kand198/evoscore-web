@@ -1,11 +1,11 @@
-import { createContext, PropsWithChildren, useState } from 'react';
-import Team from './TeamInterface';
+import { createContext, PropsWithChildren, useContext, useState } from 'react';
+import Team, { emptyTeam } from './TeamInterface';
 
 export interface CompetitionContextValue {
   name: string;
   setName: (string) => void;
   teams: Team[];
-  addTeam: (Team) => void;
+  addTeam: () => Team;
   removeTeam: (Team) => void;
   updateTeam: (Team) => void;
 }
@@ -14,10 +14,12 @@ export const CompetitionContext = createContext<CompetitionContextValue>({
   name: '',
   setName: () => {},
   teams: [],
-  addTeam: () => {},
+  addTeam: () => emptyTeam(),
   removeTeam: () => {},
   updateTeam: () => {},
 });
+
+export const useCompetition = () => useContext(CompetitionContext);
 
 interface CompetitionContextProps {}
 
@@ -29,12 +31,10 @@ const CompetitionProvider = ({
 
   const getTeamIds = () => teams.map((t) => t.id);
 
-  const addTeam = (team: Team) => {
-    if (getTeamIds().includes(team.id)) {
-      return;
-    }
-
-    setTeams([...teams, team]);
+  const addTeam = () => {
+    const newTeam = {...emptyTeam(), id: getTeamIds().reduce((maxId, id) => Math.max(maxId, id), -1) + 1};
+    setTeams([...teams, newTeam]);
+    return newTeam;
   };
 
   const removeTeam = (team: Team) => {

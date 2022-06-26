@@ -11,7 +11,7 @@ export default interface Team {
 
 export const emptyTeam = (): Team => {
   return {
-    id: 0,
+    id: -1,
     school: '',
     class: VehicleClass.UNRECOGNIZED,
     name: '',
