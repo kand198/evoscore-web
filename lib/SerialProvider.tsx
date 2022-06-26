@@ -1,5 +1,5 @@
 /**
- * Created by GitHub user joshpensky
+ * Original file created by GitHub user joshpensky
  * View gist here: https://gist.github.com/joshpensky/426d758c5779ac641d1d09f9f5894153
  * Thank you, Josh!
  */

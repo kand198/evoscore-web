@@ -50,6 +50,10 @@ const getStatusRequest = (time: number): Request => {
   return { ...emptyRequest, status: {} };
 };
 
+export const testRequest = () => {
+  return encodeRequest(getConfigFetchRequest());
+}
+
 export const encodeRequest = (RequestMessage: Request) => {
   return Request.encode(RequestMessage).finish();
 };

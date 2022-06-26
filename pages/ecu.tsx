@@ -12,7 +12,7 @@ import {
 import Link from 'next/link';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Check, X } from 'tabler-icons-react';
-import { emptyRequest, parseResponse } from '../lib/evo_proto';
+import { testRequest, parseResponse } from '../lib/evo_proto';
 import { SerialMessage, useSerial } from '../lib/SerialProvider';
 
 const ECU = () => {
@@ -34,7 +34,7 @@ const ECU = () => {
   const clear = () => (inputArrayRef.current = new Uint8Array());
 
   const printEmptyThingy = () => {
-    const buf = emptyRequest();
+    const buf = testRequest();
     // const inputAsString = new TextDecoder().decode(buf);
     // console.log("output array strings", inputAsString.split(""));
     const out = new Uint8Array(buf.length + 1);
