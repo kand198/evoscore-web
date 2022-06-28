@@ -193,7 +193,7 @@ const ECU = () => {
   // Update team info
   useEffect(() => {
     if (ecuInfo !== undefined) {
-      setTeam(teams.find((t) => t.id === ecuInfo.config.teamNumber));
+      setTeam(teams?.find((t) => t.id === ecuInfo.config.teamNumber));
     }
   }, [ecuInfo, teams]);
   const form = useForm({
@@ -202,7 +202,7 @@ const ECU = () => {
     },
   });
   const submitForm = (values: { id: string }) => {
-    const team = teams.find((t) => t.id === parseInt(values.id));
+    const team = teams?.find((t) => t.id === parseInt(values.id));
     sendRequest(
       getConfigSetRequest({
         teamNumber: team.id,
@@ -259,7 +259,7 @@ const ECU = () => {
             <Select
               label='Select the Team for this ECU'
               placeholder='Pick one'
-              data={teams.map<SelectItem>((t) => {
+              data={teams?.map<SelectItem>((t) => {
                 return { value: t.id.toString(), label: t.name };
               })}
               {...form.getInputProps('id')}

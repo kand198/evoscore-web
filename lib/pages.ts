@@ -11,4 +11,10 @@ const pages: Page[] = [
   { name: 'ECU', path: '/ecu' },
 ];
 
+export const events: Page[] = [
+  { name: 'Drag', path: '/events/drag' },
+  { name: 'Gymkhana', path: 'events/gymkhana' },
+  { name: 'Efficiency', path: 'events/efficiency' },
+];
+
 export default pages;

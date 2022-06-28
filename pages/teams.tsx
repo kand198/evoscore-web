@@ -37,11 +37,9 @@ const Teams = () => {
     class: string;
     name: string;
   }) => {
-    console.log(values);
     const { school, name } = values;
     const vehicleClass = parseInt(values.class);
-    const newEditTeam = { school, name, class: vehicleClass, id: editTeam.id };
-    console.log(newEditTeam);
+    const newEditTeam = { ...editTeam, school, name, class: vehicleClass };
     updateTeam(newEditTeam);
     setEditTeam(undefined);
   };
@@ -63,7 +61,7 @@ const Teams = () => {
       form.setValues({
         name: editTeam.name,
         school: editTeam.school,
-        class: vehicleClassMap.get(editTeam.class),
+        class: editTeam.class.toString(),
       });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -81,7 +79,7 @@ const Teams = () => {
   );
   const teamBody = (
     <tbody>
-      {teams.map((team) => (
+      {teams?.map((team) => (
         <tr
           key={team.id}
           className='hover:cursor-pointer'
