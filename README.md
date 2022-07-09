@@ -1,3 +1,11 @@
+# 🔧 WORK IN PROGRESS 🔨
+### I'm currently building this out, but keep an eye out for great things!
+
+This is the web version of EVoScore. EVoScore was a desktop-based version of this app created using React and Electron.
+EVoScore (and EVoScore Web) make running the EVolocity competition easy. This tool allows you to easily configure the up-and-coming EVolocity Control Units, and automate the scoring of the Efficiency event.
+
+---
+
 This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
 
 ## Getting Started
