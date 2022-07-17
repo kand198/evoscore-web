@@ -1,10 +1,4 @@
-import {
-  ConfigContent,
-  EnergyRequest,
-  Request,
-  Response,
-  VehicleClass,
-} from './proto/evolocity';
+import { ConfigContent, Request, Response } from './proto/evolocity';
 
 const emptyRequest: Request = {
   timestamp: 0,
