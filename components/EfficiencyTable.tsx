@@ -11,11 +11,13 @@ import {
 import { useForm, formList, FormList } from '@mantine/form';
 import { useEffect, useState } from 'react';
 import { Trash } from 'tabler-icons-react';
-import TimeDisplay from './TimeDisplay';
-import TimeInput from './TimeInput';
+import LapTimeInput from './LapTimeInput';
 import { useCompetition } from '../lib/CompetitionProvider';
 import EventInterface from '../lib/EventInterface';
 import Team, { vehicleClassMap } from '../lib/TeamInterface';
+import LapTimeDisplay from './LapTimeDisplay';
+import TimeDisplay from './TimeDisplay';
+import TimeInput from './TimeInput';
 
 const EfficiencyTable = () => {
   const { teams, updateTeam, laps } = useCompetition();
@@ -24,29 +26,29 @@ const EfficiencyTable = () => {
   const form = useForm({
     initialValues: {
       energy: '0',
-      startTimestamp: '0',
-      times: formList([{ time: '0' }]),
+      startTime: '0',
+      lapTimes: formList([{ time: '0' }]),
     },
   });
 
   const submitEdit = (values: {
     energy: string;
-    startTimestamp: string;
-    times: FormList<{ time: string }>;
+    startTime: string;
+    lapTimes: FormList<{ time: string }>;
   }) => {
+    console.log(values);
     const newEnergy = Math.max(parseInt(values.energy) | 0, 0);
-    const newStartTimestamp = Math.max(parseInt(values.startTimestamp) | 0, 0);
-    const newTimes: number[] = [
-      newStartTimestamp,
-      ...values.times
+    const newStartTime = Math.max(parseInt(values.startTime) | 0, 0);
+    const newLapTimes: number[] = [
+      ...values.lapTimes
         .map((s) => Math.max(parseInt(s.time) | 0, 0))
         .filter((n) => n !== 0),
     ];
     const events: EventInterface = {
       ...editTeam.events,
-      efficiency: { energy: newEnergy },
-      endurance: { ...editTeam.events.endurance, times: newTimes },
+      efficiency: { ...editTeam.events.efficiency, startTime: newStartTime, lapTimes: newLapTimes, energy: newEnergy },
     };
+    console.log(events);
     const newEditTeam = { ...editTeam, events };
     updateTeam(newEditTeam);
     setEditTeam(undefined);
@@ -56,11 +58,9 @@ const EfficiencyTable = () => {
     if (editTeam) {
       const values = {
         energy: editTeam.events.efficiency.energy.toString(),
-        startTimestamp: editTeam.events.endurance.times[0]?.toString() || '0',
-        times: formList(
-          editTeam.events.endurance.times.slice(1).map((t) => {
-            return { time: t.toString() };
-          })
+        startTime: editTeam.events.efficiency.startTime.toString() || '0',
+        lapTimes: formList(
+          editTeam.events.efficiency.lapTimes.map(lt => ({time: lt.toString()}))
         ),
       };
       form.setValues(values);
@@ -99,37 +99,31 @@ const EfficiencyTable = () => {
           <td>{vehicleClassMap.get(team.class)}</td>
           <td>{team.events?.efficiency.energy}</td>
           <td>
-            {team.events?.endurance.times.length > 0
-              ? team.events?.endurance.times.length - 1
+            {team.events?.efficiency.lapTimes.length > 0
+              ? team.events?.efficiency.lapTimes.length - 1
               : 0}{' '}
             / {laps}
           </td>
           <td>
             <TimeDisplay
               value={
-                team.events?.endurance.times.length > 0
-                  ? team.events?.endurance.times[
-                      team.events?.endurance.times.length - 1
-                    ] - team.events?.endurance.times[0]
-                  : 0
+                team.events.efficiency.startTime || 0
               }
             />
           </td>
           <td>
-            <TimeDisplay
+            <LapTimeDisplay
               value={
-                team.events?.endurance.times[0]
-                  ? team.events?.endurance.times[0]
-                  : 0
+                team.events?.efficiency.lapTimes[0] || 0
               }
             />
           </td>
           {Array.from({ length: laps }, (v, i) => i).map((n) => (
             <td key={n}>
-              <TimeDisplay
+              <LapTimeDisplay
                 value={
-                  team.events?.endurance.times.slice(1)[n]
-                    ? team.events?.endurance.times.slice(1)[n]
+                  team.events?.efficiency.lapTimes.slice(1)[n]
+                    ? team.events?.efficiency.lapTimes.slice(1)[n]
                     : 0
                 }
               />
@@ -172,23 +166,22 @@ const EfficiencyTable = () => {
             <TimeInput
               required
               label='Start Time'
-              // placeholder='Start Timestamp (ms)'
-              value={parseInt(form.values.startTimestamp)}
+              value={parseInt(form.values.startTime)}
               onChange={(v) =>
-                form.setValues({ ...form.values, startTimestamp: v.toString() })
+                form.setValues({ ...form.values, startTime: v.toString() })
               }
             />
-            {form.values.times &&
-              form.values.times.map((time, i) => (
+            {form.values.lapTimes &&
+              form.values.lapTimes.map((time, i) => (
                 <Group className='flex-nowrap' key={i}>
-                  <TimeInput
+                  <LapTimeInput
                     label={'Lap ' + (i + 1).toString()}
-                    value={parseInt(form.values.times[i].time)}
+                    value={parseInt(form.values.lapTimes[i].time)}
                     onChange={(t) =>
                       form.setValues({
                         ...form.values,
-                        times: formList(
-                          form.values.times.map((s, index) =>
+                        lapTimes: formList(
+                          form.values.lapTimes.map((s, index) =>
                             i === index ? { time: t.toString() } : s
                           )
                         ),
@@ -199,7 +192,7 @@ const EfficiencyTable = () => {
                     color='red'
                     variant='hover'
                     className='self-end mb-1'
-                    onClick={() => form.removeListItem('times', i)}
+                    onClick={() => form.removeListItem('lapTimes', i)}
                   >
                     <Trash size={16} />
                   </ActionIcon>
@@ -213,7 +206,7 @@ const EfficiencyTable = () => {
             </Button>
             <Button
               className='bg-blue-600 hover:bg-blue-800'
-              onClick={() => form.addListItem('times', { time: '0' })}
+              onClick={() => form.addListItem('lapTimes', { time: '0' })}
             >
               Add Time
             </Button>

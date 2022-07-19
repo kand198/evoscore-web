@@ -13,7 +13,9 @@ import {
   encodeRequest,
   getConfigFetchRequest,
   getConfigSetRequest,
+  getEnergyRequest,
   getStatusRequest,
+  getTimeSetRequest,
   parseResponse,
 } from './evo_proto';
 import useNotifications from './NotificationContext';
@@ -25,7 +27,7 @@ import {
 } from './proto/evolocity';
 import { PortState, SerialMessage, useSerial } from './SerialProvider';
 import Team from './TeamInterface';
-import {Text} from '@mantine/core'
+import { Text } from '@mantine/core';
 
 export type EcuState =
   | 'Disconnected'
@@ -47,6 +49,8 @@ interface IEcuContext {
   ecuInfo: EcuInfo;
   ecuTeam: Team;
   setEcuTeam: (t: Team) => void;
+  setTime: (t: number) => void;
+  getEnergy: (r?: [s: number, e: number]) => void;
 }
 
 const EcuContext = createContext<Partial<IEcuContext>>({});
@@ -56,8 +60,7 @@ type EcuProviderProps = {
 };
 
 export const EcuProvider = ({ children }: EcuProviderProps) => {
-  const { portState, connect, disconnect, subscribe, sendBuf } =
-    useSerial();
+  const { portState, connect, disconnect, subscribe, sendBuf } = useSerial();
 
   const { addNotification } = useNotifications();
 
@@ -68,10 +71,19 @@ export const EcuProvider = ({ children }: EcuProviderProps) => {
   const [ecuInfo, setEcuInfo] = useState<EcuInfo | undefined>(undefined);
   const [ecuState, setEcuState] = useState<EcuState>('Disconnected');
   const activeTimeouts = useRef<number[]>([]);
+  const activeRequests = useRef<Request[]>([]);
+  const incrementingId = useRef<number>(0);
 
   const sendRequest = useCallback(
     (request: Request) => {
-      const buf = encodeRequest(request);
+      const finalRequest: Request = {
+        ...request,
+        uid: incrementingId.current,
+        timestamp: Date.now(),
+      };
+      incrementingId.current = incrementingId.current + 1;
+      activeRequests.current.push(finalRequest);
+      const buf = encodeRequest(finalRequest);
       const out = new Uint8Array(buf.length + 1);
       out.set(buf);
       sendBuf(out);
@@ -96,9 +108,8 @@ export const EcuProvider = ({ children }: EcuProviderProps) => {
   }, [ecuState, portState, sendRequest]);
 
   const refreshEcu = useCallback(() => {
-    getConfig();
     getStatus();
-  }, [getConfig, getStatus]);
+  }, [getStatus]);
 
   const setEcuTeam = useCallback(
     (t: Team) => {
@@ -113,10 +124,18 @@ export const EcuProvider = ({ children }: EcuProviderProps) => {
     [sendRequest]
   );
 
+  const setTime = useCallback((t: number) => sendRequest(getTimeSetRequest(t)), [sendRequest]);
+
+  const getEnergy = useCallback((r?: [s: number, e: number]) => sendRequest(getEnergyRequest(r)), [sendRequest]);
+
   useEffect(() => {
     if (portState === 'open') {
       setEcuState('Ready');
-      addNotification({ type: 'success', title: 'Connected', content: <Text>ECU Connected</Text> });
+      addNotification({
+        type: 'success',
+        title: 'Connected',
+        content: <Text>ECU Connected</Text>,
+      });
     }
     if (portState === 'closed') {
       setEcuState('Disconnected');
@@ -127,12 +146,11 @@ export const EcuProvider = ({ children }: EcuProviderProps) => {
         content: <Text>ECU Disconnected</Text>,
       });
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [portState]);
 
   useEffect(() => {
     if (ecuState === 'Ready' && ecuInfo === undefined) {
-      console.log('new open, getting config');
       getConfig();
     }
 
@@ -148,6 +166,20 @@ export const EcuProvider = ({ children }: EcuProviderProps) => {
   const responseHandler = useCallback(
     (response: Response) => {
       if (
+        response?.uid > incrementingId.current ||
+        response?.timestamp > Date.now()
+      )
+        throw new Error('Recieved a message from the future.');
+      const matchingRequest = activeRequests.current.find(
+        (r) => r.uid === response.uid
+      );
+      if (matchingRequest === undefined)
+        throw new Error('Unknown message recieved.');
+      activeRequests.current = activeRequests.current.filter(
+        (r) => r.uid !== response.uid
+      );
+
+      if (
         response.config !== undefined &&
         response.config.content !== undefined
       ) {
@@ -160,16 +192,28 @@ export const EcuProvider = ({ children }: EcuProviderProps) => {
       }
       if (response.ack !== undefined) {
         console.log('Ack Received');
+        if (
+          matchingRequest.config !== undefined &&
+          matchingRequest.config.content !== undefined
+        ) {
+          getConfig();
+        }
       }
+      if (
+        response.energy !== undefined &&
+        response.energy.frames !== undefined
+      ) {
+        console.log('Energy Received', response.energy.frames);
+      }
+      if (response.timestamp !== undefined)
+        console.log('Timestamp:', response.timestamp);
     },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [ecuInfo]
   );
 
   const inputHandler = useCallback(
     (message: SerialMessage) => {
-      console.log('input message', message.value);
-      const inputAsString = new TextDecoder().decode(message.value);
-      console.log('input as string', inputAsString);
       const oldRef = inputArrayRef.current;
       const appendMode =
         inputArrayRef.current !== undefined && inputArrayRef.current.length;
@@ -238,16 +282,10 @@ export const EcuProvider = ({ children }: EcuProviderProps) => {
       ecuInfo,
       ecuTeam: team,
       setEcuTeam,
+      setTime,
+      getEnergy,
     }),
-    [
-      connect,
-      disconnect,
-      ecuInfo,
-      ecuState,
-      refreshEcu,
-      setEcuTeam,
-      team,
-    ]
+    [connect, disconnect, ecuInfo, ecuState, refreshEcu, setEcuTeam, setTime, getEnergy, team]
   );
 
   return <EcuContext.Provider value={value}>{children}</EcuContext.Provider>;

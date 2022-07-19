@@ -10,14 +10,15 @@ import {
 } from '@mantine/core';
 import Link from 'next/link';
 import { useMemo } from 'react';
-import { Refresh, Trash } from 'tabler-icons-react';
+import { Activity, Clock, Refresh, Trash } from 'tabler-icons-react';
 import EcuInfo from '../components/EcuInfo';
+import EnergyFetch from '../components/EnergyFetch';
 import TeamSelect from '../components/TeamSelect';
 import useEcu from '../lib/EcuContext';
 import { useSerial } from '../lib/SerialProvider';
 
 const ECU = () => {
-  const { ecuState, connect, disconnect, refreshEcu } = useEcu();
+  const { ecuState, connect, disconnect, refreshEcu, setTime, getEnergy } = useEcu();
   const { canUseSerial } = useSerial();
 
   const statusColour: DefaultMantineColor = useMemo(() => {
@@ -45,14 +46,14 @@ const ECU = () => {
   const ConnectionControls = () => (
     <Group>
       <Button
-        className='bg-blue-600'
+        className='bg-blue-600 hover:bg-blue-800'
         onClick={() => connect()}
         disabled={ecuState !== 'Disconnected'}
       >
         Manually Connect
       </Button>
       <Button
-        className='bg-blue-600'
+        className='bg-blue-600 hover:bg-blue-800'
         onClick={() => disconnect()}
         disabled={ecuState !== 'Ready'}
       >
@@ -64,14 +65,35 @@ const ECU = () => {
   const EcuControls = () => (
     <Group>
       <Button
-        className='bg-blue-600'
+        className='bg-blue-600 hover:bg-blue-800'
         onClick={refreshEcu}
         disabled={ecuState !== 'Ready'}
+        leftIcon={<Refresh />}
       >
-        <Refresh />
+        <Text>Refresh Status</Text>
       </Button>
-      <Button className='bg-red-600' disabled={ecuState !== 'Ready'}>
-        <Trash />
+      <Button
+        className='bg-blue-600 hover:bg-blue-800'
+        onClick={() => setTime(Date.now())}
+        disabled={ecuState !== 'Ready'}
+        leftIcon={<Clock />}
+      >
+        <Text>Sync Time</Text>
+      </Button>
+      <Button
+        className='bg-blue-600 hover:bg-blue-800'
+        onClick={() => getEnergy([0,1])}
+        disabled={ecuState !== 'Ready'}
+        leftIcon={<Activity />}
+      >
+        <Text>Get Energy</Text>
+      </Button>
+      <Button
+        className='bg-red-600 hover:bg-red-800'
+        disabled={ecuState !== 'Ready'}
+        leftIcon={<Trash />}
+      >
+        <Text>Reset</Text>
       </Button>
     </Group>
   );
@@ -84,6 +106,7 @@ const ECU = () => {
           <ConnectionControls />
           <TeamSelect />
           <EcuInfo />
+          <EnergyFetch />
           <EcuControls />
         </Stack>
       ) : (

@@ -1,10 +1,10 @@
 import { Text } from '@mantine/core';
 
-export interface TimeDisplayProps {
+export interface LapTimeDisplayProps {
   value: number;
 }
 
-const TimeDisplay = (props: TimeDisplayProps) => {
+const LapTimeDisplay = (props: LapTimeDisplayProps) => {
   const { value } = props;
   const filteredValue = value && value > 0 ? value : 0;
 
@@ -15,11 +15,11 @@ const TimeDisplay = (props: TimeDisplayProps) => {
       (filteredValue > 0 ? String(n) : '--').padStart(2, '0')
     );
     timeString.splice(1, 0, ':');
-    timeString.splice(3, 0, ':');
+    timeString.splice(3, 0, '.');
     return timeString;
   };
 
-  return <Text>{constructTimeString([time.getHours(), time.getMinutes(), time.getSeconds()])}</Text>;
+  return <Text>{constructTimeString([time.getMinutes(), time.getSeconds(), time.getMilliseconds()])}</Text>;
 };
 
-export default TimeDisplay;
+export default LapTimeDisplay;

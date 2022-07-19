@@ -1,6 +1,6 @@
 import { InputWrapper, Input, NumberInput, Group } from '@mantine/core';
 
-export interface TimeInputProps {
+export interface LapTimeInputProps {
   required?: boolean;
   label?: React.ReactNode;
   placeHolder?: string;
@@ -8,16 +8,16 @@ export interface TimeInputProps {
   onChange?: (number) => void;
 }
 
-const TimeInput = (props: TimeInputProps) => {
+const LapTimeInput = (props: LapTimeInputProps) => {
   const { required, label, placeHolder, value, onChange } = props;
 
   const filteredValue = value && value > 0 ? value : 0;
 
   const time = new Date(filteredValue);
 
-  const onHoursChange = onChange !== undefined ? (n) => onChange(new Date(time).setHours(n)) : () => {};
-  const onMinsChange = onChange !== undefined ? (n) => onChange(new Date(time).setMinutes(n)) : () => {};
-  const onSecsChange = onChange !== undefined ? (n) => onChange(new Date(time).setSeconds(n)) : () => {};
+  const onMinsChange = (n) => onChange(new Date(time).setMinutes(n));
+  const onSecsChange = (n) => onChange(new Date(time).setSeconds(n));
+  const onMillisChange = (n) => onChange(new Date(time).setMilliseconds(n));
 
   return (
     <InputWrapper required={required} label={label} placeholder={placeHolder}>
@@ -25,16 +25,6 @@ const TimeInput = (props: TimeInputProps) => {
         <NumberInput
           required={required}
           placeholder='mins'
-          value={time.getHours()}
-          onChange={onHoursChange}
-          max={59}
-          min={0}
-          className='flex-auto'
-        />
-        :
-        <NumberInput
-          required={required}
-          placeholder='secs'
           value={time.getMinutes()}
           onChange={onMinsChange}
           max={59}
@@ -44,9 +34,19 @@ const TimeInput = (props: TimeInputProps) => {
         :
         <NumberInput
           required={required}
-          placeholder='millis'
+          placeholder='secs'
           value={time.getSeconds()}
           onChange={onSecsChange}
+          max={59}
+          min={0}
+          className='flex-auto'
+        />
+        .
+        <NumberInput
+          required={required}
+          placeholder='millis'
+          value={time.getMilliseconds()}
+          onChange={onMillisChange}
           max={59}
           min={0}
           className='flex-auto'
@@ -56,4 +56,4 @@ const TimeInput = (props: TimeInputProps) => {
   );
 };
 
-export default TimeInput;
+export default LapTimeInput;

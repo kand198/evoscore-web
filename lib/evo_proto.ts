@@ -22,13 +22,13 @@ export const getConfigSetRequest = (content: ConfigContent): Request => {
   return { ...emptyRequest, config: { content } };
 };
 
-export const getEnergyRequest = (
-  startTimestamp: number,
-  endTimestamp: number
+export const getEnergyRequest = (r?:
+  [startTimestamp: number,
+  endTimestamp: number]
 ): Request => {
   return {
     ...emptyRequest,
-    energy: { timestampPair: { startTimestamp, endTimestamp } },
+    energy: { timestampPair: r !== undefined ? { startTimestamp: r[0], endTimestamp: r[1] } : undefined },
   };
 };
 

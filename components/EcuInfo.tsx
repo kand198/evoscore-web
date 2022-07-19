@@ -57,7 +57,6 @@ const EcuInfo = () => {
             ? ecuInfo?.status.current
             : 'Unknown'}
         </Text>
-        <Text>Energy: (coming soon)</Text>
       </Group>
     </Stack>
   );
