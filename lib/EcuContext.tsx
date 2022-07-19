@@ -88,6 +88,12 @@ export const EcuProvider = ({ children }: EcuProviderProps) => {
 
   useEffect(() => {
     energyFramesRef.current = energyFrames;
+    const totalTime = energyFrames.reduce<number>((t, eF, i, a) => i > 0 ? t + eF.endTimestamp - a[i-1].endTimestamp : 0, 0);
+    const coulombCount = energyFrames.reduce<number>((c, eF, i, a) => i > 0 ? c + eF.averageCurrent*(eF.endTimestamp - a[i-1].endTimestamp) : 0, 0);
+    const averageVoltage = energyFrames.reduce<number>((aV, eF, i, a) => i > 0 ? aV + eF.averageVoltage*(eF.endTimestamp - a[i-1].endTimestamp)/totalTime : 0, 0);
+    const energy = averageVoltage*coulombCount;
+    const averagePower = energy / totalTime;
+    console.log(totalTime, coulombCount, averageVoltage, averagePower, energy);
   }, [energyFrames]);
 
   const sendRequest = useCallback(
