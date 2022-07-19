@@ -21,7 +21,7 @@ const TimeInput = (props: TimeInputProps) => {
 
   return (
     <InputWrapper required={required} label={label} placeholder={placeHolder}>
-      <Group className='flex-nowrap'>
+      <Group className='flex-nowrap max-w-sm gap-x-1'>
         <NumberInput
           required={required}
           placeholder='mins'
@@ -29,7 +29,6 @@ const TimeInput = (props: TimeInputProps) => {
           onChange={onHoursChange}
           max={59}
           min={0}
-          className='flex-auto'
         />
         :
         <NumberInput
@@ -39,7 +38,6 @@ const TimeInput = (props: TimeInputProps) => {
           onChange={onMinsChange}
           max={59}
           min={0}
-          className='flex-auto'
         />
         :
         <NumberInput
@@ -49,7 +47,6 @@ const TimeInput = (props: TimeInputProps) => {
           onChange={onSecsChange}
           max={59}
           min={0}
-          className='flex-auto'
         />
       </Group>
     </InputWrapper>

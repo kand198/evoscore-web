@@ -1,13 +1,13 @@
-import { Button, NumberInput, Select, SelectItem } from '@mantine/core';
+import { Button,Text } from '@mantine/core';
 import { useForm } from '@mantine/hooks';
 import { useEffect } from 'react';
-import { useCompetition } from '../lib/CompetitionProvider';
+import { Activity } from 'tabler-icons-react';
 import useEcu from '../lib/EcuContext';
 import { getTimeRange } from '../lib/TimeHelpers';
 import TimeInput from './TimeInput';
 
 const EnergyFetch = () => {
-  const { ecuTeam, ecuState } = useEcu();
+  const { ecuTeam, ecuState, getEnergy } = useEcu();
 
   const timeForm = useForm({
     initialValues: {
@@ -22,10 +22,14 @@ const EnergyFetch = () => {
   }) => {
     const { startTime, endTime } = values;
     const todayTimestamp = new Date(Date.now()).setHours(0, 0, 0, 0);
-    const startTimestamp = Math.floor((todayTimestamp + parseInt(startTime))/1000);
-    const endTimestamp = Math.floor((todayTimestamp + parseInt(endTime))/1000);
-    const nowTimestamp = Math.floor(Date.now()/1000);
-    console.log(startTimestamp, endTimestamp, todayTimestamp);
+    const startTimestamp = Math.floor(
+      (todayTimestamp + parseInt(startTime)) / 1000
+    );
+    const endTimestamp = Math.floor(
+      (todayTimestamp + parseInt(endTime)) / 1000
+    );
+    console.log(startTimestamp, endTimestamp, Date.now() / 1000);
+    getEnergy([startTimestamp, endTimestamp])
   };
 
   useEffect(() => {
@@ -60,10 +64,11 @@ const EnergyFetch = () => {
       />
       <Button
         type='submit'
-        className='bg-blue-600 hover:bg-blue-800 max-w-sm'
+        className='bg-blue-600 hover:bg-blue-800'
         disabled={ecuState !== 'Ready'}
+        leftIcon={<Activity />}
       >
-        Submit
+        <Text>Get Energy</Text>
       </Button>
     </form>
   );

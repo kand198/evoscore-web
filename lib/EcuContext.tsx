@@ -14,6 +14,7 @@ import {
   getConfigFetchRequest,
   getConfigSetRequest,
   getEnergyRequest,
+  getResetRequest,
   getStatusRequest,
   getTimeSetRequest,
   parseResponse,
@@ -24,16 +25,19 @@ import {
   StatusResponse,
   Response,
   Request,
+  EnergyFrame,
 } from './proto/evolocity';
 import { PortState, SerialMessage, useSerial } from './SerialProvider';
 import Team from './TeamInterface';
 import { Text } from '@mantine/core';
+import * as _m0 from 'protobufjs/minimal';
 
 export type EcuState =
   | 'Disconnected'
   | 'Fetching Status'
   | 'Fetching Config'
   | 'Sending Config'
+  | 'Fetching Energy'
   | 'Ready';
 
 export type EcuInfo = {
@@ -51,6 +55,7 @@ interface IEcuContext {
   setEcuTeam: (t: Team) => void;
   setTime: (t: number) => void;
   getEnergy: (r?: [s: number, e: number]) => void;
+  resetEcu: () => void;
 }
 
 const EcuContext = createContext<Partial<IEcuContext>>({});
@@ -70,16 +75,27 @@ export const EcuProvider = ({ children }: EcuProviderProps) => {
   const inputArrayRef = useRef<Uint8Array>();
   const [ecuInfo, setEcuInfo] = useState<EcuInfo | undefined>(undefined);
   const [ecuState, setEcuState] = useState<EcuState>('Disconnected');
-  const activeTimeouts = useRef<number[]>([]);
+  const [energyFrames, setEnergyFrames] = useState<EnergyFrame[]>([]);
+  const energyFramesRef = useRef<EnergyFrame[]>([]);
   const activeRequests = useRef<Request[]>([]);
   const incrementingId = useRef<number>(0);
+  const timeRange = useRef<[number, number]>([0, 0]);
+
+  const addEnergyFrames = (ef: EnergyFrame[]) => {
+    energyFramesRef.current = [...ef, ...energyFramesRef.current.filter((frame) => !ef.includes(frame))];
+    setEnergyFrames(energyFramesRef.current);
+  }
+
+  useEffect(() => {
+    energyFramesRef.current = energyFrames;
+  }, [energyFrames]);
 
   const sendRequest = useCallback(
     (request: Request) => {
       const finalRequest: Request = {
         ...request,
         uid: incrementingId.current,
-        timestamp: Date.now(),
+        timestamp: Date.now() / 1000,
       };
       incrementingId.current = incrementingId.current + 1;
       activeRequests.current.push(finalRequest);
@@ -124,9 +140,24 @@ export const EcuProvider = ({ children }: EcuProviderProps) => {
     [sendRequest]
   );
 
-  const setTime = useCallback((t: number) => sendRequest(getTimeSetRequest(t)), [sendRequest]);
+  const setTime = useCallback(
+    (t: number) => sendRequest(getTimeSetRequest(0)),
+    [sendRequest]
+  );
 
-  const getEnergy = useCallback((r?: [s: number, e: number]) => sendRequest(getEnergyRequest(r)), [sendRequest]);
+  const getEnergy = useCallback(
+    (r?: [s: number, e: number]) => {
+      timeRange.current = r || [0, 0];
+      setEcuState('Fetching Energy');
+      sendRequest(getEnergyRequest(r));
+    },
+    [sendRequest]
+  );
+
+  const resetEcu = useCallback(
+    () => sendRequest(getResetRequest()),
+    [sendRequest]
+  );
 
   useEffect(() => {
     if (portState === 'open') {
@@ -152,14 +183,6 @@ export const EcuProvider = ({ children }: EcuProviderProps) => {
   useEffect(() => {
     if (ecuState === 'Ready' && ecuInfo === undefined) {
       getConfig();
-    }
-
-    if (ecuState === 'Fetching Config') {
-      activeTimeouts.current.push(window?.setTimeout(getConfig, 5000));
-    }
-
-    if (ecuState === 'Fetching Status') {
-      activeTimeouts.current.push(window?.setTimeout(getStatus, 5000));
     }
   }, [ecuInfo, ecuState, getConfig, getStatus]);
 
@@ -204,6 +227,17 @@ export const EcuProvider = ({ children }: EcuProviderProps) => {
         response.energy.frames !== undefined
       ) {
         console.log('Energy Received', response.energy.frames);
+        addEnergyFrames(response.energy.frames);
+        if (
+          response.energy.frames.length == 16 &&
+          response.energy.frames[response.energy.frames.length - 1]
+            .endTimestamp < timeRange.current[1]
+        )
+          getEnergy([
+            response.energy.frames[response.energy.frames.length - 1]
+              .endTimestamp + 1,
+            timeRange.current[1],
+          ]);
       }
       if (response.timestamp !== undefined)
         console.log('Timestamp:', response.timestamp);
@@ -227,37 +261,41 @@ export const EcuProvider = ({ children }: EcuProviderProps) => {
         inputArrayRef.current = message.value;
       }
 
-      const fullMessageReceived =
-        inputArrayRef.current.length - 1 === inputArrayRef.current.at(0);
+      try {
+        const lengthReader = new _m0.Reader(inputArrayRef.current);
+        const encodedLength = lengthReader.uint32();
+        const offset = lengthReader.pos;
 
-      if (fullMessageReceived) {
-        const input = inputArrayRef.current.slice(
-          1,
-          inputArrayRef.current.at(0) + 1
-        );
-        const newRef = inputArrayRef.current.slice(
-          inputArrayRef.current.at(0) + 1
-        );
-        inputArrayRef.current = newRef;
+        const fullMessageReceived =
+          inputArrayRef.current.length - offset >= encodedLength;
 
-        try {
-          responseHandler(parseResponse(input));
-        } catch (e) {
-          const hexString = Array.from(input)
-            .map((c) => c.toString(16))
-            .map((s) => (s === '0' ? '00' : s))
-            .toString();
-          console.log(hexString.replaceAll(',', ' '));
-          console.log('input error', e);
-          console.log('input hex buf: [' + hexString + ']');
-        } finally {
-          setEcuState('Ready');
-          activeTimeouts.current.forEach((n) => clearTimeout(n));
-          activeTimeouts.current = [];
+        if (fullMessageReceived) {
+          const input = inputArrayRef.current.slice(
+            offset,
+            encodedLength + offset
+          );
+          const newRef = inputArrayRef.current.slice(encodedLength + offset);
+          inputArrayRef.current = newRef;
+
+          try {
+            responseHandler(parseResponse(input));
+          } catch (e) {
+            const hexString = Array.from(input)
+              .map((c) => c.toString(16))
+              .map((s) => (s === '0' ? '00' : s))
+              .toString();
+            console.log(hexString.replaceAll(',', ' '));
+            console.log('input error', e);
+            console.log('input hex buf: [' + hexString + ']');
+            sendRequest(activeRequests.current[0]);
+          } finally {
+            setEcuState('Ready');
+          }
         }
+      } catch (e) {
       }
     },
-    [responseHandler]
+    [responseHandler, sendRequest]
   );
 
   useEffect(() => {
@@ -284,8 +322,20 @@ export const EcuProvider = ({ children }: EcuProviderProps) => {
       setEcuTeam,
       setTime,
       getEnergy,
+      resetEcu,
     }),
-    [connect, disconnect, ecuInfo, ecuState, refreshEcu, setEcuTeam, setTime, getEnergy, team]
+    [
+      connect,
+      disconnect,
+      ecuInfo,
+      ecuState,
+      refreshEcu,
+      setEcuTeam,
+      setTime,
+      getEnergy,
+      resetEcu,
+      team,
+    ]
   );
 
   return <EcuContext.Provider value={value}>{children}</EcuContext.Provider>;

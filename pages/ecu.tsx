@@ -18,7 +18,7 @@ import useEcu from '../lib/EcuContext';
 import { useSerial } from '../lib/SerialProvider';
 
 const ECU = () => {
-  const { ecuState, connect, disconnect, refreshEcu, setTime, getEnergy } = useEcu();
+  const { ecuState, connect, disconnect, refreshEcu, setTime, getEnergy, resetEcu } = useEcu();
   const { canUseSerial } = useSerial();
 
   const statusColour: DefaultMantineColor = useMemo(() => {
@@ -81,15 +81,8 @@ const ECU = () => {
         <Text>Sync Time</Text>
       </Button>
       <Button
-        className='bg-blue-600 hover:bg-blue-800'
-        onClick={() => getEnergy([0,1])}
-        disabled={ecuState !== 'Ready'}
-        leftIcon={<Activity />}
-      >
-        <Text>Get Energy</Text>
-      </Button>
-      <Button
         className='bg-red-600 hover:bg-red-800'
+        onClick={() => resetEcu()}
         disabled={ecuState !== 'Ready'}
         leftIcon={<Trash />}
       >
