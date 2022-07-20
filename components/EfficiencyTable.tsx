@@ -17,7 +17,7 @@ import EventInterface from '../lib/EventInterface';
 import Team, { vehicleClassMap } from '../lib/TeamInterface';
 import LapTimeDisplay from './LapTimeDisplay';
 import TimeDisplay from './TimeDisplay';
-import TimeInput from './TimeInput';
+import DateTimeInput from './DateTimeInput';
 
 const EfficiencyTable = () => {
   const { teams, updateTeam, laps } = useCompetition();
@@ -46,7 +46,12 @@ const EfficiencyTable = () => {
     ];
     const events: EventInterface = {
       ...editTeam.events,
-      efficiency: { ...editTeam.events.efficiency, startTime: newStartTime, lapTimes: newLapTimes, energy: newEnergy },
+      efficiency: {
+        ...editTeam.events.efficiency,
+        startTime: newStartTime,
+        lapTimes: newLapTimes,
+        energy: newEnergy,
+      },
     };
     console.log(events);
     const newEditTeam = { ...editTeam, events };
@@ -60,7 +65,9 @@ const EfficiencyTable = () => {
         energy: editTeam.events.efficiency.energy.toString(),
         startTime: editTeam.events.efficiency.startTime.toString() || '0',
         lapTimes: formList(
-          editTeam.events.efficiency.lapTimes.map(lt => ({time: lt.toString()}))
+          editTeam.events.efficiency.lapTimes.map((lt) => ({
+            time: lt.toString(),
+          }))
         ),
       };
       form.setValues(values);
@@ -105,18 +112,10 @@ const EfficiencyTable = () => {
             / {laps}
           </td>
           <td>
-            <TimeDisplay
-              value={
-                team.events.efficiency.startTime || 0
-              }
-            />
+            <TimeDisplay value={team.events.efficiency.startTime || 0} />
           </td>
           <td>
-            <LapTimeDisplay
-              value={
-                team.events?.efficiency.lapTimes[0] || 0
-              }
-            />
+            <LapTimeDisplay value={team.events?.efficiency.lapTimes[0] || 0} />
           </td>
           {Array.from({ length: laps }, (v, i) => i).map((n) => (
             <td key={n}>
@@ -163,7 +162,7 @@ const EfficiencyTable = () => {
                 form.setValues({ ...form.values, energy: e.toString() })
               }
             />
-            <TimeInput
+            <DateTimeInput
               required
               label='Start Time'
               value={parseInt(form.values.startTime)}

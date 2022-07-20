@@ -14,11 +14,20 @@ import { Activity, Clock, Refresh, Trash } from 'tabler-icons-react';
 import EcuInfo from '../components/EcuInfo';
 import EnergyFetch from '../components/EnergyFetch';
 import TeamSelect from '../components/TeamSelect';
+import EcuChart from '../components/EcuChart';
 import useEcu from '../lib/EcuContext';
 import { useSerial } from '../lib/SerialProvider';
 
 const ECU = () => {
-  const { ecuState, connect, disconnect, refreshEcu, setTime, getEnergy, resetEcu } = useEcu();
+  const {
+    ecuState,
+    connect,
+    disconnect,
+    refreshEcu,
+    setTime,
+    resetEcu,
+    energyFrames,
+  } = useEcu();
   const { canUseSerial } = useSerial();
 
   const statusColour: DefaultMantineColor = useMemo(() => {
@@ -101,6 +110,7 @@ const ECU = () => {
           <EcuInfo />
           <EnergyFetch />
           <EcuControls />
+          <EcuChart energyFrames={energyFrames} />
         </Stack>
       ) : (
         <Alert

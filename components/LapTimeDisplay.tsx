@@ -19,7 +19,15 @@ const LapTimeDisplay = (props: LapTimeDisplayProps) => {
     return timeString;
   };
 
-  return <Text>{constructTimeString([time.getMinutes(), time.getSeconds(), time.getMilliseconds()])}</Text>;
+  return (
+    <Text>
+      {constructTimeString([
+        time.getMinutes(),
+        time.getSeconds(),
+        time.getMilliseconds(),
+      ])}
+    </Text>
+  );
 };
 
 export default LapTimeDisplay;

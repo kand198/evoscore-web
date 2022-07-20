@@ -19,7 +19,15 @@ const TimeDisplay = (props: TimeDisplayProps) => {
     return timeString;
   };
 
-  return <Text>{constructTimeString([time.getHours(), time.getMinutes(), time.getSeconds()])}</Text>;
+  return (
+    <Text>
+      {constructTimeString([
+        time.getHours(),
+        time.getMinutes(),
+        time.getSeconds(),
+      ])}
+    </Text>
+  );
 };
 
 export default TimeDisplay;
