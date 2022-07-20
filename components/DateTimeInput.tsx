@@ -48,6 +48,7 @@ const DateTimeInput = (props: DateTimeInputProps) => {
           label='Date'
           value={time}
           onChange={onDateChange}
+          className='grow'
           required
         />
         <TimeInput
@@ -56,6 +57,7 @@ const DateTimeInput = (props: DateTimeInputProps) => {
           label='Time'
           value={time}
           onChange={onTimeChange}
+          className='shrink min-w-0'
           withSeconds
           required
         />

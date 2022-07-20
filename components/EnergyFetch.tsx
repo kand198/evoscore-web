@@ -47,7 +47,7 @@ const EnergyFetch = () => {
       className='w-full flex flex-row gap-x-2 items-end'
     >
       <DateTimeInput
-        label='Select the start time'
+        label='From:'
         value={parseInt(timeForm.values.startTime)}
         onChange={(v) => {
           console.log(v);
@@ -55,7 +55,7 @@ const EnergyFetch = () => {
         }}
       />
       <DateTimeInput
-        label='Select the end time'
+        label='To:'
         value={parseInt(timeForm.values.endTime)}
         onChange={(v) =>
           timeForm.setValues({ ...timeForm.values, endTime: v.toString() })

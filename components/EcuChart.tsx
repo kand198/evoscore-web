@@ -14,8 +14,8 @@ interface EcuChartProps {
 }
 
 const EcuChart = ({ energyFrames }: EcuChartProps) => {
-  const data = energyFrames.map((eF) => ({
-    time: new Date(eF.endTimestamp).toLocaleTimeString(),
+  const data = energyFrames.sort((a, b) => a.endTimestamp - b.endTimestamp).map((eF) => ({
+    time: new Date(eF.endTimestamp * 1000).toLocaleTimeString(),
     averageVoltage: eF.averageVoltage / 1000,
     averageCurrent: eF.averageCurrent / 1000,
     averagePower: ((eF.averageVoltage / 1000) * eF.averageCurrent) / 1000,

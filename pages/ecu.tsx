@@ -42,45 +42,36 @@ const ECU = () => {
   }, [ecuState]);
 
   const TitleGroup = () => (
-    <Group className='items-center'>
-      <Indicator position='middle-end' offset={-4} color={statusColour}>
-        <Title order={1} className='pr-1'>
-          ECU Configurator
-        </Title>
-      </Indicator>
-      <Text>{ecuState}</Text>
-    </Group>
-  );
-
-  const ConnectionControls = () => (
-    <Group>
-      <Button
-        className='bg-blue-600 hover:bg-blue-800'
-        onClick={() => connect()}
-        disabled={ecuState !== 'Disconnected'}
-      >
-        Manually Connect
-      </Button>
-      <Button
-        className='bg-blue-600 hover:bg-blue-800'
-        onClick={() => disconnect()}
-        disabled={ecuState !== 'Ready'}
-      >
-        Disconnect
-      </Button>
+    <Group className='w-full justify-between flex-nowrap'>
+      <Group className='items-center'>
+        <Indicator position='middle-end' offset={-4} color={statusColour}>
+          <Title order={1} className='pr-1 whitespace-nowrap'>
+            ECU Configurator
+          </Title>
+        </Indicator>
+        <Text>{ecuState}</Text>
+      </Group>
+      <Group className='flex-nowrap'>
+        <Button
+          className='bg-blue-600 hover:bg-blue-800'
+          onClick={() => connect()}
+          disabled={ecuState !== 'Disconnected'}
+        >
+          Manually Connect
+        </Button>
+        <Button
+          className='bg-blue-600 hover:bg-blue-800'
+          onClick={() => disconnect()}
+          disabled={ecuState !== 'Ready'}
+        >
+          Disconnect
+        </Button>
+      </Group>
     </Group>
   );
 
   const EcuControls = () => (
     <Group>
-      <Button
-        className='bg-blue-600 hover:bg-blue-800'
-        onClick={refreshEcu}
-        disabled={ecuState !== 'Ready'}
-        leftIcon={<Refresh />}
-      >
-        <Text>Refresh Status</Text>
-      </Button>
       <Button
         className='bg-blue-600 hover:bg-blue-800'
         onClick={() => setTime(Date.now())}
@@ -101,11 +92,10 @@ const ECU = () => {
   );
 
   return (
-    <Stack className='relative h-full'>
+    <Stack className='relative h-full max-w-4xl'>
       {canUseSerial ? (
         <Stack>
           <TitleGroup />
-          <ConnectionControls />
           <TeamSelect />
           <EcuInfo />
           <EnergyFetch />
