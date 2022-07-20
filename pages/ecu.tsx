@@ -23,10 +23,10 @@ const ECU = () => {
     ecuState,
     connect,
     disconnect,
-    refreshEcu,
     setTime,
     resetEcu,
     energyFrames,
+    timeDelta
   } = useEcu();
   const { canUseSerial } = useSerial();
 
@@ -72,6 +72,7 @@ const ECU = () => {
 
   const EcuControls = () => (
     <Group>
+      <Text>Time Delta (seconds): {timeDelta}</Text>
       <Button
         className='bg-blue-600 hover:bg-blue-800'
         onClick={() => setTime(Date.now())}

@@ -29,7 +29,7 @@ import {
 } from './proto/evolocity';
 import { PortState, SerialMessage, useSerial } from './SerialProvider';
 import Team from './TeamInterface';
-import { Text } from '@mantine/core';
+import { Text, useMantineDefaultProps } from '@mantine/core';
 import * as _m0 from 'protobufjs/minimal';
 
 export type EcuState =
@@ -58,6 +58,7 @@ interface IEcuContext {
   getEnergyFrames: (r?: [s: number, e: number]) => void;
   clearEnergyFrames: () => void;
   resetEcu: () => void;
+  timeDelta: number;
 }
 
 const EcuContext = createContext<Partial<IEcuContext>>({});
@@ -78,6 +79,7 @@ export const EcuProvider = ({ children }: EcuProviderProps) => {
 
   const [ecuInfo, setEcuInfo] = useState<EcuInfo | undefined>(undefined);
   const [ecuState, setEcuState] = useState<EcuState>('Disconnected');
+  const [timeDelta, setTimeDelta] = useState(0);
 
   const [energyFrames, setEnergyFrames] = useState<EnergyFrame[]>([]);
   const energyFramesRef = useRef<EnergyFrame[]>([]);
@@ -87,7 +89,6 @@ export const EcuProvider = ({ children }: EcuProviderProps) => {
 
   const activeRequest = useRef<Request | undefined>();
   const [request, setRequest] = useState<Request | undefined>();
-  const timeoutRef = useRef<NodeJS.Timeout | undefined>();
 
   const addEnergyFrames = (ef: EnergyFrame[]) => {
     const newEfTimestamps = ef.map((ef) => ef.endTimestamp);
@@ -113,7 +114,7 @@ export const EcuProvider = ({ children }: EcuProviderProps) => {
     (r: Request) => {
       const finalRequest: Request = {
         ...r,
-        uid: incrementingId.current,
+        uid: r.uid > 0 ? r.uid : incrementingId.current,
         timestamp: Date.now() / 1000,
       };
       activeRequest.current = { ...finalRequest };
@@ -128,9 +129,14 @@ export const EcuProvider = ({ children }: EcuProviderProps) => {
   );
 
   useEffect(() => {
-    timeoutRef.current = setTimeout(() => {
-      sendRequest(request);
+    const uidToResend = request?.uid;
+    const timeout = setTimeout(() => {
+      if (activeRequest.current !== undefined && activeRequest.current.uid === uidToResend) sendRequest(activeRequest.current)
     }, 5000);
+    return () => clearTimeout(timeout);
+  }, [request, sendRequest])
+
+  useEffect(() => {
     if (portState === 'open') {
       if (request === undefined) setEcuState('Ready');
       else if (request.config !== undefined) setEcuState('Fetching Config');
@@ -139,7 +145,6 @@ export const EcuProvider = ({ children }: EcuProviderProps) => {
       else if (request.status !== undefined) setEcuState('Fetching Status');
       else if (request.time !== undefined) setEcuState('Fetching Status');
     }
-    return () => clearTimeout(timeoutRef.current);
   }, [portState, request, sendRequest]);
 
   const getConfig = useCallback(() => {
@@ -147,7 +152,7 @@ export const EcuProvider = ({ children }: EcuProviderProps) => {
   }, [sendRequest]);
 
   const getStatus = useCallback(() => {
-      sendRequest(getStatusRequest());
+    sendRequest(getStatusRequest());
   }, [sendRequest]);
 
   const refreshEcu = useCallback(() => {
@@ -216,47 +221,51 @@ export const EcuProvider = ({ children }: EcuProviderProps) => {
     (response: Response) => {
       const matchingRequest = activeRequest.current.uid === response.uid;
       if (matchingRequest) {
-        clearTimeout(timeoutRef.current);
         console.log('timeout cleared');
         activeRequest.current = undefined;
         setRequest(activeRequest.current);
-      }
-      if (
-        response.config !== undefined &&
-        response.config.content !== undefined
-      ) {
-        console.log('Config Received', response.config.content);
-        setEcuInfo({ ...ecuInfo, config: response.config.content });
-      }
-      if (response.status !== undefined) {
-        console.log('Status Received', response.status);
-        setEcuInfo({ ...ecuInfo, status: response.status });
-      }
-      if (response.ack !== undefined) {
-        console.log('Ack Received');
-      }
-      if (
-        response.energy !== undefined &&
-        response.energy.frames !== undefined
-      ) {
-        console.log('Energy Received', response.energy.frames);
-        addEnergyFrames(response.energy.frames);
         if (
-          response.energy.frames.length == 16 &&
-          response.energy.frames[response.energy.frames.length - 1]
-            .endTimestamp < timeRange.current[1]
-        )
-          getEnergyFrames([
+          response.config !== undefined &&
+          response.config.content !== undefined
+        ) {
+          console.log('Config Received', response.config.content);
+          setEcuInfo({ ...ecuInfo, config: response.config.content });
+        }
+        if (response.status !== undefined) {
+          console.log('Status Received', response.status);
+          setEcuInfo({ ...ecuInfo, status: response.status });
+        }
+        if (response.ack !== undefined) {
+          console.log('Ack Received');
+        }
+        if (
+          response.energy !== undefined &&
+          response.energy.frames !== undefined
+        ) {
+          console.log('Energy Received', response.energy.frames);
+          addEnergyFrames(response.energy.frames);
+          if (
+            response.energy.frames.length == 16 &&
             response.energy.frames[response.energy.frames.length - 1]
-              .endTimestamp + 1,
-            timeRange.current[1],
-          ]);
-        else timeRange.current = [0,0]
+              .endTimestamp < timeRange.current[1]
+          )
+            getEnergyFrames([
+              response.energy.frames[response.energy.frames.length - 1]
+                .endTimestamp + 1,
+              timeRange.current[1],
+            ]);
+          else timeRange.current = [0, 0];
+        }
+        if (response.timestamp !== undefined)
+          setTimeDelta(
+            new Date(Date.now() / 1000 - response.timestamp).getTime()
+          );
+      } else {
+        console.log('mismatch')
+        sendRequest(activeRequest.current)
       }
-      if (response.timestamp !== undefined)
-        console.log('Timestamp:', response.timestamp);
     },
-    [ecuInfo, getEnergyFrames]
+    [ecuInfo, getEnergyFrames, sendRequest]
   );
 
   const inputHandler = useCallback(
@@ -316,7 +325,7 @@ export const EcuProvider = ({ children }: EcuProviderProps) => {
   }, [subscribe, inputHandler]);
 
   useEffect(() => {
-    if (ecuInfo !== undefined) {
+    if (ecuInfo !== undefined && ecuInfo.config !== undefined) {
       setTeam(teams?.find((t) => t.id === ecuInfo.config.teamNumber));
     }
   }, [ecuInfo, teams]);
@@ -335,6 +344,7 @@ export const EcuProvider = ({ children }: EcuProviderProps) => {
       getEnergyFrames,
       clearEnergyFrames,
       resetEcu,
+      timeDelta,
     }),
     [
       connect,
@@ -349,6 +359,7 @@ export const EcuProvider = ({ children }: EcuProviderProps) => {
       clearEnergyFrames,
       resetEcu,
       team,
+      timeDelta,
     ]
   );
 
