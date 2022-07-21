@@ -227,7 +227,7 @@ export const EcuProvider = ({ children }: EcuProviderProps) => {
 
   const responseHandler = useCallback(
     (response: Response) => {
-      const matchingRequest = activeRequest.current.uid === response.uid;
+      const matchingRequest = activeRequest.current?.uid === response.uid;
       if (matchingRequest) {
         console.log('timeout cleared');
         activeRequest.current = undefined;
