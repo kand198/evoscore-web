@@ -44,7 +44,7 @@ const EnergyFetch = () => {
   return (
     <form
       onSubmit={timeForm.onSubmit((values) => submitEnergyRequest(values))}
-      className='w-full flex flex-row gap-x-2 items-end'
+      className='w-full flex flex-row flex-wrap gap-y-2 gap-x-2 items-end'
     >
       <DateTimeInput
         label='From:'

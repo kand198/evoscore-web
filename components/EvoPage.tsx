@@ -22,7 +22,7 @@ const EvoPage = (props) => {
         navbarOffsetBreakpoint='sm'
         asideOffsetBreakpoint='sm'
         fixed
-        navbar={<EvoNavbar opened={opened} />}
+        navbar={<EvoNavbar opened={opened} onClose={() => setOpened(false)} />}
         footer={
           <Footer height={60} p='md'>
             Copyright EVolocity. Created by Keith Anderson and Thomas Galbraith.

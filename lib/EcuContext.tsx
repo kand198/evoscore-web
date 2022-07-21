@@ -207,6 +207,14 @@ export const EcuProvider = ({ children }: EcuProviderProps) => {
         title: 'Disconnected',
         content: <Text>ECU Disconnected</Text>,
       });
+      setTeam(undefined);
+      inputArrayRef.current = new Uint8Array();
+      setTimeDelta(0);
+      energyFramesRef.current = [];
+      setEnergyFrames([]);
+      timeRange.current = [0,0];
+      activeRequest.current = undefined;
+      setRequest(undefined);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [portState]);

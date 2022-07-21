@@ -42,7 +42,7 @@ const ECU = () => {
   }, [ecuState]);
 
   const TitleGroup = () => (
-    <Group className='w-full justify-between flex-nowrap'>
+    <Group className='w-full justify-between'>
       <Group className='items-center'>
         <Indicator position='middle-end' offset={-4} color={statusColour}>
           <Title order={1} className='pr-1 whitespace-nowrap'>

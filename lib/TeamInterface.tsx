@@ -20,6 +20,7 @@ export const emptyTeam = (): Team => {
 };
 
 export const vehicleClassMap = new Map<VehicleClass, string>([
+  [VehicleClass.UNRECOGNIZED, 'Unknown'],
   [VehicleClass.STANDARD, 'Standard'],
   [VehicleClass.OPEN, 'Open'],
   [VehicleClass.COMPETITION, 'Competition'],

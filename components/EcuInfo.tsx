@@ -4,21 +4,22 @@ import useEcu from '../lib/EcuContext';
 import { vehicleClassMap } from '../lib/TeamInterface';
 
 const EcuInfo = () => {
-  const { ecuInfo, refreshEcu, ecuState } = useEcu();
+  const { ecuInfo, refreshEcu, ecuState, ecuTeam } = useEcu();
+  console.log(ecuTeam);
   return (
     <Stack>
       <Group>
         <Text>
-          Serial Number:{' '}
-          {ecuInfo?.config?.serialNumber !== undefined
-            ? ecuInfo?.config.serialNumber
-            : ''}
+          ECU Serial Number:{' '}
+          {ecuInfo?.config?.serialNumber?.toString()}
         </Text>
         <Text>
-          Team Number:{' '}
-          {ecuInfo?.config?.teamNumber !== undefined
-            ? ecuInfo?.config.teamNumber
-            : ''}
+          Team ID:{' '}
+          {ecuInfo?.config?.teamNumber?.toString()}
+        </Text>
+        <Text>
+          Team Name:{' '}
+          {ecuTeam?.name}
         </Text>
         <Text>
           Vehicle Class:{' '}
