@@ -1,6 +1,6 @@
 import { InputWrapper, Input, NumberInput, Group } from '@mantine/core';
 
-export interface TimeInputProps {
+export interface LapTimeInputProps {
   required?: boolean;
   label?: React.ReactNode;
   placeHolder?: string;
@@ -8,20 +8,16 @@ export interface TimeInputProps {
   onChange?: (number) => void;
 }
 
-const TimeInput = (props: TimeInputProps) => {
+const LapTimeInput = (props: LapTimeInputProps) => {
   const { required, label, placeHolder, value, onChange } = props;
 
   const filteredValue = value && value > 0 ? value : 0;
 
-  const mins = Math.max(Math.trunc(filteredValue / 60000), 0);
-  const secs = Math.max(Math.trunc((filteredValue - mins * 60000) / 1000), 0);
-  const millis = Math.max(filteredValue - mins * 60000 - secs * 1000, 0);
+  const time = new Date(filteredValue);
 
-  // console.log('value:', value, 'mins', mins, 'secs', secs, 'millis', millis);
-
-  const onMinsChange = (n) => onChange(value - mins * 60000 + n * 60000);
-  const onSecsChange = (n) => onChange(value - secs * 1000 + n * 1000);
-  const onMillisChange = (n) => onChange(value - millis + n);
+  const onMinsChange = (n) => onChange(new Date(time).setMinutes(n));
+  const onSecsChange = (n) => onChange(new Date(time).setSeconds(n));
+  const onMillisChange = (n) => onChange(new Date(time).setMilliseconds(n));
 
   return (
     <InputWrapper required={required} label={label} placeholder={placeHolder}>
@@ -29,7 +25,7 @@ const TimeInput = (props: TimeInputProps) => {
         <NumberInput
           required={required}
           placeholder='mins'
-          value={mins}
+          value={time.getMinutes()}
           onChange={onMinsChange}
           max={59}
           min={0}
@@ -39,17 +35,17 @@ const TimeInput = (props: TimeInputProps) => {
         <NumberInput
           required={required}
           placeholder='secs'
-          value={secs}
+          value={time.getSeconds()}
           onChange={onSecsChange}
           max={59}
           min={0}
           className='flex-auto'
         />
-        :
+        .
         <NumberInput
           required={required}
           placeholder='millis'
-          value={millis}
+          value={time.getMilliseconds()}
           onChange={onMillisChange}
           max={59}
           min={0}
@@ -60,4 +56,4 @@ const TimeInput = (props: TimeInputProps) => {
   );
 };
 
-export default TimeInput;
+export default LapTimeInput;

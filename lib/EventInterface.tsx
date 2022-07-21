@@ -7,11 +7,10 @@ export default interface EventInterface {
     bonus: number;
     loss: number;
   };
-  endurance: {
-    times: number[];
-    running: boolean;
-  };
   efficiency: {
+    startTime: number;
+    lapTimes: number[];
+    running: boolean;
     energy: number;
   };
 }
@@ -26,11 +25,10 @@ export const emptyEvents = () => {
       bonus: 0,
       loss: 0,
     },
-    endurance: {
-      times: [],
-      running: false,
-    },
     efficiency: {
+      startTime: 0,
+      lapTimes: [],
+      running: false,
       energy: 0,
     },
   };

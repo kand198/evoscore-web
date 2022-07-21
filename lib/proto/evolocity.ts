@@ -8,7 +8,7 @@ export enum VehicleClass {
   STANDARD = 0,
   OPEN = 1,
   COMPETITION = 2,
-  UNRECOGNIZED = -1,
+  UNRECOGNIZED = 3,
 }
 
 export function vehicleClassFromJSON(object: any): VehicleClass {
