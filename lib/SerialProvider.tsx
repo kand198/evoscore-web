@@ -7,6 +7,7 @@
 import {
   createContext,
   PropsWithChildren,
+  useCallback,
   useContext,
   useEffect,
   useRef,
@@ -98,17 +99,20 @@ const SerialProvider = ({
     }
   };
 
-  const sendBuf = (b: Uint8Array) => {
-    try {
-      if (portState === 'open' && portRef.current.writable) {
-        const writer = portRef.current.writable.getWriter();
-        writer.write(b);
-        writer.releaseLock();
+  const sendBuf = useCallback(
+    (b: Uint8Array) => {
+      try {
+        if (portState === 'open' && portRef.current.writable) {
+          const writer = portRef.current.writable.getWriter();
+          writer.write(b);
+          writer.releaseLock();
+        }
+      } catch (error) {
+        console.log(error);
       }
-    } catch (error) {
-      console.log(error);
-    }
-  };
+    },
+    [portState]
+  );
 
   /**
    * Reads from the given port until it's been closed.

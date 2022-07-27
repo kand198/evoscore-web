@@ -1,10 +1,4 @@
-import {
-  ConfigContent,
-  EnergyRequest,
-  Request,
-  Response,
-  VehicleClass,
-} from './proto/evolocity';
+import { ConfigContent, Request, Response } from './proto/evolocity';
 
 const emptyRequest: Request = {
   timestamp: 0,
@@ -29,12 +23,16 @@ export const getConfigSetRequest = (content: ConfigContent): Request => {
 };
 
 export const getEnergyRequest = (
-  startTimestamp: number,
-  endTimestamp: number
+  r?: [startTimestamp: number, endTimestamp: number]
 ): Request => {
   return {
     ...emptyRequest,
-    energy: { timestampPair: { startTimestamp, endTimestamp } },
+    energy: {
+      timestampPair:
+        r !== undefined
+          ? { startTimestamp: r[0], endTimestamp: r[1] }
+          : undefined,
+    },
   };
 };
 
