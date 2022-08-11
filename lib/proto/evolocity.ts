@@ -8,7 +8,7 @@ export enum VehicleClass {
   STANDARD = 0,
   OPEN = 1,
   COMPETITION = 2,
-  UNRECOGNIZED = 3,
+  UNRECOGNIZED = -1,
 }
 
 export function vehicleClassFromJSON(object: any): VehicleClass {
@@ -96,6 +96,7 @@ export interface EnergyFrame {
   endTimestamp: number;
   averageVoltage: number;
   averageCurrent: number;
+  totalEnergy: number;
 }
 
 export interface EnergyResponse {
@@ -856,7 +857,12 @@ export const ConfigResponse = {
 };
 
 function createBaseEnergyFrame(): EnergyFrame {
-  return { endTimestamp: 0, averageVoltage: 0, averageCurrent: 0 };
+  return {
+    endTimestamp: 0,
+    averageVoltage: 0,
+    averageCurrent: 0,
+    totalEnergy: 0,
+  };
 }
 
 export const EnergyFrame = {
@@ -872,6 +878,9 @@ export const EnergyFrame = {
     }
     if (message.averageCurrent !== 0) {
       writer.uint32(24).int32(message.averageCurrent);
+    }
+    if (message.totalEnergy !== 0) {
+      writer.uint32(32).uint32(message.totalEnergy);
     }
     return writer;
   },
@@ -892,6 +901,9 @@ export const EnergyFrame = {
         case 3:
           message.averageCurrent = reader.int32();
           break;
+        case 4:
+          message.totalEnergy = reader.uint32();
+          break;
         default:
           reader.skipType(tag & 7);
           break;
@@ -911,6 +923,7 @@ export const EnergyFrame = {
       averageCurrent: isSet(object.averageCurrent)
         ? Number(object.averageCurrent)
         : 0,
+      totalEnergy: isSet(object.totalEnergy) ? Number(object.totalEnergy) : 0,
     };
   },
 
@@ -922,6 +935,8 @@ export const EnergyFrame = {
       (obj.averageVoltage = Math.round(message.averageVoltage));
     message.averageCurrent !== undefined &&
       (obj.averageCurrent = Math.round(message.averageCurrent));
+    message.totalEnergy !== undefined &&
+      (obj.totalEnergy = Math.round(message.totalEnergy));
     return obj;
   },
 
@@ -932,6 +947,7 @@ export const EnergyFrame = {
     message.endTimestamp = object.endTimestamp ?? 0;
     message.averageVoltage = object.averageVoltage ?? 0;
     message.averageCurrent = object.averageCurrent ?? 0;
+    message.totalEnergy = object.totalEnergy ?? 0;
     return message;
   },
 };
