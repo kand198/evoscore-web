@@ -52,10 +52,7 @@ const EcuChart = ({ energyFrames }: EcuChartProps) => {
   const getPower = (eF: EnergyFrame) => getVoltage(eF) * getCurrent(eF);
   const getTimeDeltaSeconds = (p: EnergyFrame, c: EnergyFrame) =>
     c.endTimestamp - p.endTimestamp;
-  const getTimeDeltaHours = (p: EnergyFrame, c: EnergyFrame) =>
-    getTimeDeltaSeconds(p, c) / 60 / 60;
-  const getEnergy = (p: EnergyFrame, c: EnergyFrame) =>
-    getPower(c) * getTimeDeltaHours(p, c);
+  const getEnergy = (c: EnergyFrame) => c.totalEnergy / 60 / 60;
 
   const data = energyFrames
     .sort((a, b) => a.endTimestamp - b.endTimestamp)
@@ -66,7 +63,7 @@ const EcuChart = ({ energyFrames }: EcuChartProps) => {
       Power: discontinuityFilter(getPower(eF), i, a),
       Energy:
         a[i - 1] !== undefined
-          ? discontinuityFilter(getEnergy(a[i - 1], eF), i, a)
+          ? discontinuityFilter(getEnergy(eF), i, a)
           : 0,
     }));
   const cumulativeEnergyData = data.reduce<
