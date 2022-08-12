@@ -7,6 +7,7 @@ import {
   Stack,
   Title,
 } from '@mantine/core';
+import Link from 'next/link';
 import { useState } from 'react';
 import EfficiencyTable from '../../components/EfficiencyTable';
 import Timer from '../../components/Timer';
@@ -19,12 +20,12 @@ const Efficiency = () => {
   return (
     <Stack>
       <Breadcrumbs>
-        <Anchor href='/events' key={0}>
-          Events
-        </Anchor>
-        <Anchor href='/events/efficiency' key={1}>
-          Efficiency
-        </Anchor>
+        <Link passHref href='/events' key={0}>
+          <Anchor>Events</Anchor>
+        </Link>
+        <Link passHref href='/events/efficiency' key={1}>
+          <Anchor>Efficiency</Anchor>
+        </Link>
       </Breadcrumbs>
       <Group className='items-center'>
         <Title>Efficiency</Title>
