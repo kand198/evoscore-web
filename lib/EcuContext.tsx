@@ -72,7 +72,7 @@ export const EcuProvider = ({ children }: EcuProviderProps) => {
 
   const { addNotification } = useNotifications();
 
-  const { teams } = useCompetition();
+  const { teams, updateTeam } = useCompetition();
   const [team, setTeam] = useState<Team | undefined>(undefined);
 
   const inputArrayRef = useRef<Uint8Array>();
@@ -105,6 +105,13 @@ export const EcuProvider = ({ children }: EcuProviderProps) => {
     energyFramesRef.current = [];
     setEnergyFrames([]);
   }, []);
+
+  const updateTeamEnergy = useCallback(() => {
+    const newTeam = {...team};
+    newTeam.events.efficiency.energy = energyFrames.reduce((p, c) => p + c.totalEnergy, 0) / 60 / 60;
+    updateTeam(newTeam);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [energyFrames, team])
 
   useEffect(() => {
     energyFramesRef.current = energyFrames;
@@ -262,7 +269,10 @@ export const EcuProvider = ({ children }: EcuProviderProps) => {
                 .endTimestamp + 1,
               timeRange.current[1],
             ]);
-          else timeRange.current = [0, 0];
+          else {
+            timeRange.current = [0, 0];
+            updateTeamEnergy();
+          }
         }
         if (response.timestamp !== undefined)
           setTimeDelta(
@@ -273,7 +283,7 @@ export const EcuProvider = ({ children }: EcuProviderProps) => {
         sendRequest(activeRequest.current)
       }
     },
-    [ecuInfo, getEnergyFrames, sendRequest]
+    [ecuInfo, getEnergyFrames, sendRequest, updateTeamEnergy]
   );
 
   const inputHandler = useCallback(

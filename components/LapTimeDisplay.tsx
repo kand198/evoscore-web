@@ -11,8 +11,12 @@ const LapTimeDisplay = (props: LapTimeDisplayProps) => {
   const time = new Date(filteredValue);
 
   const constructTimeString = (vals: number[]) => {
-    const timeString = vals.map((n) =>
-      (filteredValue > 0 ? String(n) : '--').padStart(2, '0')
+    const timeString = vals.map((n, i) => {
+      const isMs = i == 2;
+      const dashString = isMs ? '---' : '--';
+      const padLength = isMs ? 3 : 2;
+      return (filteredValue > 0 ? String(n) : dashString).padStart(padLength, '0');
+    }
     );
     timeString.splice(1, 0, ':');
     timeString.splice(3, 0, '.');

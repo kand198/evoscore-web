@@ -14,6 +14,7 @@ const pages: Page[] = [
 export const events: Page[] = [
   { name: 'Drag', path: '/events/drag' },
   { name: 'Gymkhana', path: 'events/gymkhana' },
+  { name: 'Endurance', path: 'events/endurance' },
   { name: 'Efficiency', path: 'events/efficiency' },
 ];
 

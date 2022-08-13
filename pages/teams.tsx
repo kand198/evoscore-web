@@ -14,7 +14,7 @@ import { useEffect, useState } from 'react';
 import { Plus } from 'tabler-icons-react';
 import { useCompetition } from '../lib/CompetitionProvider';
 import { VehicleClass } from '../lib/proto/evolocity';
-import Team, { vehicleClassMap } from '../lib/TeamInterface';
+import Team, { vehicleClassMap, vehicleTypeMap } from '../lib/TeamInterface';
 
 const Teams = () => {
   const { teams, addTeam, removeTeam, updateTeam } = useCompetition();
@@ -25,6 +25,7 @@ const Teams = () => {
       name: '',
       school: '',
       class: vehicleClassMap.get(VehicleClass.STANDARD),
+      type: undefined,
     },
   });
 
@@ -36,10 +37,12 @@ const Teams = () => {
     school: string;
     class: string;
     name: string;
+    type: string;
   }) => {
     const { school, name } = values;
     const vehicleClass = parseInt(values.class);
-    const newEditTeam = { ...editTeam, school, name, class: vehicleClass };
+    const vehicleType = parseInt(values.type);
+    const newEditTeam = { ...editTeam, school, name, class: vehicleClass, type: vehicleType };
     updateTeam(newEditTeam);
     setEditTeam(undefined);
   };
@@ -62,6 +65,7 @@ const Teams = () => {
         name: editTeam.name,
         school: editTeam.school,
         class: editTeam.class.toString(),
+        type: editTeam.type,
       });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -74,6 +78,7 @@ const Teams = () => {
         <th>Name</th>
         <th>School</th>
         <th>Class</th>
+        <th>Type</th>
       </tr>
     </thead>
   );
@@ -89,6 +94,7 @@ const Teams = () => {
           <td>{team.name}</td>
           <td>{team.school}</td>
           <td>{vehicleClassMap.get(team.class)}</td>
+          <td>{vehicleTypeMap.get(team.type)}</td>
         </tr>
       ))}
     </tbody>
@@ -137,6 +143,16 @@ const Teams = () => {
               { value: '2', label: 'Competition' },
             ]}
             {...form.getInputProps('class')}
+          />
+          <Select
+            label='Select the Vehicle Type'
+            placeholder='Pick one'
+            data={[
+              { value: '0', label: 'Bike' },
+              { value: '1', label: 'Trike' },
+              { value: '2', label: 'Kart' },
+            ]}
+            {...form.getInputProps('type')}
           />
           <Space h='md' />
           <Group className='justify-evenly'>

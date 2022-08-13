@@ -20,7 +20,7 @@ import TimeDisplay from './TimeDisplay';
 import DateTimeInput from './DateTimeInput';
 import { getTotalTime } from '../lib/TimeHelpers';
 
-const EfficiencyTable = () => {
+const EnduranceTable = () => {
   const { teams, updateTeam, laps } = useCompetition();
   const [editTeam, setEditTeam] = useState<Team | undefined>(undefined);
 
@@ -76,7 +76,7 @@ const EfficiencyTable = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [editTeam]);
 
-  const EfficiencyHeader = (
+  const EnduranceHeader = (
     <thead>
       <tr>
         <th>ID #</th>
@@ -86,10 +86,15 @@ const EfficiencyTable = () => {
         <th>Type</th>
         <th>Energy Used</th>
         <th>Laps</th>
+        <th>Total Time</th>
+        <th>Start Time</th>
+        {Array.from({ length: laps }, (v, i) => i).map((n) => (
+          <th key={n}>Lap {n + 1}</th>
+        ))}
       </tr>
     </thead>
   );
-  const EfficiencyBody = (
+  const EnduranceBody = (
     <tbody>
       {teams?.map((team) => (
         <tr
@@ -109,6 +114,26 @@ const EfficiencyTable = () => {
               : 0}{' '}
             / {laps}
           </td>
+          <td>
+            <LapTimeDisplay value={getTotalTime(team)} />
+          </td>
+          <td>
+            <TimeDisplay value={team.events.efficiency.startTime || 0} />
+          </td>
+          <td>
+            <LapTimeDisplay value={team.events?.efficiency.lapTimes[0] || 0} />
+          </td>
+          {Array.from({ length: laps - 1 }, (v, i) => i).map((n) => (
+            <td key={n}>
+              <LapTimeDisplay
+                value={
+                  team.events?.efficiency.lapTimes.slice(1)[n]
+                    ? team.events?.efficiency.lapTimes.slice(1)[n]
+                    : 0
+                }
+              />
+            </td>
+          ))}
         </tr>
       ))}
     </tbody>
@@ -122,8 +147,8 @@ const EfficiencyTable = () => {
           className='overflow-x-scroll whitespace-nowrap'
           striped
         >
-          {EfficiencyHeader}
-          {EfficiencyBody}
+          {EnduranceHeader}
+          {EnduranceBody}
         </Table>
         <Space h='md' />
       </ScrollArea>
@@ -197,4 +222,4 @@ const EfficiencyTable = () => {
   );
 };
 
-export default EfficiencyTable;
+export default EnduranceTable;

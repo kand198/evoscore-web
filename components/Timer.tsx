@@ -7,6 +7,8 @@ import {
   PlayerTrackNext,
   TrashX,
 } from 'tabler-icons-react';
+import { useCompetition } from '../lib/CompetitionProvider';
+import TimerControls from './TimerControls';
 
 export type TimerMode = 'efficiency' | 'drag' | 'gymkhana';
 
@@ -15,34 +17,18 @@ export interface TimerProps {
 }
 
 const Timer = (props: TimerProps) => {
+  const { teams, updateTeam, laps } = useCompetition();
   const { mode } = props;
-  const [timerState, setTimerState] = useState('stopped');
-  return (
-    <Stack>
-      <Group>
-        {timerState === 'stopped' && (
-          <>
-            <ActionIcon className='' onClick={() => setTimerState('running')}>
-              <PlayerPlay size={32} />
-            </ActionIcon>
-            <ActionIcon className=''>
-              <TrashX size={32} />
-            </ActionIcon>
-          </>
-        )}
-        {timerState === 'running' && (
-          <>
-            <ActionIcon className='' onClick={() => setTimerState('stopped')}>
-              <PlayerStop size={32} />
-            </ActionIcon>
-            <ActionIcon className=''>
-              <PlayerTrackNext size={32} />
-            </ActionIcon>
-          </>
-        )}
+
+
+  return <Stack>
+    {teams?.map((t) => (
+      <Group key={t.name} className="justify-between">
+        <Text>{t.name}</Text>
+        <TimerControls team={t} mode={mode} />
       </Group>
-    </Stack>
-  );
+    ))}
+  </Stack>;
 };
 
 export default Timer;
