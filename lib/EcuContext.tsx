@@ -107,11 +107,12 @@ export const EcuProvider = ({ children }: EcuProviderProps) => {
   }, []);
 
   const updateTeamEnergy = useCallback(() => {
-    const newTeam = {...team};
-    newTeam.events.efficiency.energy = energyFrames.reduce((p, c) => p + c.totalEnergy, 0) / 60 / 60;
+    const newTeam = { ...team };
+    newTeam.events.efficiency.energy =
+      energyFrames.reduce((p, c) => p + c.totalEnergy, 0) / 60 / 60;
     updateTeam(newTeam);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [energyFrames, team])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [energyFrames, team]);
 
   useEffect(() => {
     energyFramesRef.current = energyFrames;
@@ -138,10 +139,14 @@ export const EcuProvider = ({ children }: EcuProviderProps) => {
   useEffect(() => {
     const uidToResend = request?.uid;
     const timeout = setTimeout(() => {
-      if (activeRequest.current !== undefined && activeRequest.current.uid === uidToResend) sendRequest(activeRequest.current)
+      if (
+        activeRequest.current !== undefined &&
+        activeRequest.current.uid === uidToResend
+      )
+        sendRequest(activeRequest.current);
     }, 5000);
     return () => clearTimeout(timeout);
-  }, [request, sendRequest])
+  }, [request, sendRequest]);
 
   useEffect(() => {
     if (portState === 'open') {
@@ -219,7 +224,7 @@ export const EcuProvider = ({ children }: EcuProviderProps) => {
       setTimeDelta(0);
       energyFramesRef.current = [];
       setEnergyFrames([]);
-      timeRange.current = [0,0];
+      timeRange.current = [0, 0];
       activeRequest.current = undefined;
       setRequest(undefined);
     }
@@ -279,8 +284,8 @@ export const EcuProvider = ({ children }: EcuProviderProps) => {
             new Date(Date.now() / 1000 - response.timestamp).getTime()
           );
       } else {
-        console.log('mismatch')
-        sendRequest(activeRequest.current)
+        console.log('mismatch');
+        sendRequest(activeRequest.current);
       }
     },
     [ecuInfo, getEnergyFrames, sendRequest, updateTeamEnergy]

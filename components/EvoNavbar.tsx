@@ -2,9 +2,12 @@ import { Button, Navbar } from '@mantine/core';
 import Link from 'next/link';
 import pages from '../lib/pages';
 
-interface IEvoNavbarProps {opened: boolean, onClose: () => void};
+interface IEvoNavbarProps {
+  opened: boolean;
+  onClose: () => void;
+}
 
-const EvoNavbar = ({opened, onClose}: IEvoNavbarProps) => {
+const EvoNavbar = ({ opened, onClose }: IEvoNavbarProps) => {
   return (
     <Navbar
       p='md'
@@ -15,7 +18,10 @@ const EvoNavbar = ({opened, onClose}: IEvoNavbarProps) => {
     >
       {pages.map((page) => (
         <Link key={page.name} href={page.path} passHref>
-          <Button onClick={onClose} className='bg-none text-black hover:text-white rounded-none hover:bg-blue-800 w-full'>
+          <Button
+            onClick={onClose}
+            className='bg-none text-black hover:text-white rounded-none hover:bg-blue-800 w-full'
+          >
             {page.name}
           </Button>
         </Link>

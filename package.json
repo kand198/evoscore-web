@@ -16,6 +16,7 @@
     "@mantine/hooks": "^4.2.12",
     "@mantine/next": "^4.2.10",
     "@types/w3c-web-serial": "^1.0.2",
+    "csv": "^6.2.0",
     "dayjs": "^1.11.4",
     "next": "12.1.4",
     "protobufjs": "^6.11.3",

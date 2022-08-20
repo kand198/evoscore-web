@@ -10,17 +10,10 @@ const EcuInfo = () => {
     <Stack>
       <Group>
         <Text>
-          ECU Serial Number:{' '}
-          {ecuInfo?.config?.serialNumber?.toString()}
+          ECU Serial Number: {ecuInfo?.config?.serialNumber?.toString()}
         </Text>
-        <Text>
-          Team ID:{' '}
-          {ecuInfo?.config?.teamNumber?.toString()}
-        </Text>
-        <Text>
-          Team Name:{' '}
-          {ecuTeam?.name}
-        </Text>
+        <Text>Team ID: {ecuInfo?.config?.teamNumber?.toString()}</Text>
+        <Text>Team Name: {ecuTeam?.name}</Text>
         <Text>
           Vehicle Class:{' '}
           {ecuInfo?.config?.vehicleClass !== undefined
@@ -31,9 +24,7 @@ const EcuInfo = () => {
       <Group>
         <Text>
           Uptime:{' '}
-          {ecuInfo?.status?.uptime !== undefined
-            ? ecuInfo?.status.uptime
-            : ''}
+          {ecuInfo?.status?.uptime !== undefined ? ecuInfo?.status.uptime : ''}
         </Text>
         <Text>
           Flash Usage:{' '}

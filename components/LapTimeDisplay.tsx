@@ -15,9 +15,11 @@ const LapTimeDisplay = (props: LapTimeDisplayProps) => {
       const isMs = i == 2;
       const dashString = isMs ? '---' : '--';
       const padLength = isMs ? 3 : 2;
-      return (filteredValue > 0 ? String(n) : dashString).padStart(padLength, '0');
-    }
-    );
+      return (filteredValue > 0 ? String(n) : dashString).padStart(
+        padLength,
+        '0'
+      );
+    });
     timeString.splice(1, 0, ':');
     timeString.splice(3, 0, '.');
     return timeString;

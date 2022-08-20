@@ -1,4 +1,4 @@
-import { ScrollArea, Stack } from '@mantine/core';
+import { Button, ScrollArea, Stack, Text } from '@mantine/core';
 import {
   CartesianGrid,
   Legend,
@@ -9,15 +9,17 @@ import {
   XAxis,
   YAxis,
 } from 'recharts';
+import { Download } from 'tabler-icons-react';
 import useEcu from '../lib/EcuContext';
 import { EnergyFrame, VehicleClass } from '../lib/proto/evolocity';
+import * as csv from 'csv';
 
 interface EcuChartProps {
   energyFrames: EnergyFrame[];
 }
 
 const EcuChart = ({ energyFrames }: EcuChartProps) => {
-  const { ecuTeam } = useEcu();
+  const { ecuTeam, ecuState } = useEcu();
 
   const getVoltageLimit = () => {
     if (ecuTeam?.class === VehicleClass.STANDARD) return 40;
@@ -62,9 +64,7 @@ const EcuChart = ({ energyFrames }: EcuChartProps) => {
       Current: discontinuityFilter(getCurrent(eF), i, a),
       Power: discontinuityFilter(getPower(eF), i, a),
       Energy:
-        a[i - 1] !== undefined
-          ? discontinuityFilter(getEnergy(eF), i, a)
-          : 0,
+        a[i - 1] !== undefined ? discontinuityFilter(getEnergy(eF), i, a) : 0,
     }));
   const cumulativeEnergyData = data.reduce<
     { Time: number; Power: number; 'Total Energy': number }[]
@@ -88,6 +88,36 @@ const EcuChart = ({ energyFrames }: EcuChartProps) => {
           ],
     []
   );
+
+  const handleDownload = () => {
+    csv.stringify(
+      data,
+      {
+        header: true,
+        columns: {
+          Time: 'Time',
+          Voltage: 'Voltage',
+          Current: 'Current',
+          Power: 'Power',
+          Energy: 'Energy',
+        },
+      },
+      (err, output) => {
+        if (err) {
+          console.error(err);
+        } else {
+          const blob = new Blob([output], { type: 'text/csv' });
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = 'data.csv';
+          a.click();
+          URL.revokeObjectURL(url);
+        }
+      }
+    );
+  };
+
   return (
     <ScrollArea>
       <Stack className='h-full min-w-[600px]'>
@@ -216,6 +246,15 @@ const EcuChart = ({ energyFrames }: EcuChartProps) => {
           </LineChart>
         </ResponsiveContainer>
       </Stack>
+      <Button
+        type='button'
+        className='bg-blue-600 hover:bg-blue-800'
+        disabled={ecuState !== 'Ready'}
+        onClick={handleDownload}
+        leftIcon={<Download />}
+      >
+        <Text>Download Data as CSV</Text>
+      </Button>
     </ScrollArea>
   );
 };

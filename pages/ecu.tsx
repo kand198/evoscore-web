@@ -26,7 +26,7 @@ const ECU = () => {
     setTime,
     resetEcu,
     energyFrames,
-    timeDelta
+    timeDelta,
   } = useEcu();
   const { canUseSerial } = useSerial();
 

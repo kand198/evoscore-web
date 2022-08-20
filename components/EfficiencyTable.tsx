@@ -41,9 +41,7 @@ const EfficiencyTable = () => {
     const newEnergy = Math.max(values.energy, 0);
     const newStartTime = Math.max(values.startTime, 0);
     const newLapTimes: number[] = [
-      ...values.lapTimes
-        .map((s) => Math.max(s.time, 0))
-        .filter((n) => n !== 0),
+      ...values.lapTimes.map((s) => Math.max(s.time, 0)).filter((n) => n !== 0),
     ];
     const events: EventInterface = {
       ...editTeam.events,
@@ -139,17 +137,13 @@ const EfficiencyTable = () => {
               label='Energy Used'
               placeholder='Energy Used (mWh)'
               value={form.values.energy}
-              onChange={(e) =>
-                form.setValues({ ...form.values, energy: e })
-              }
+              onChange={(e) => form.setValues({ ...form.values, energy: e })}
             />
             <DateTimeInput
               required
               label='Start Time'
               value={form.values.startTime}
-              onChange={(v) =>
-                form.setValues({ ...form.values, startTime: v })
-              }
+              onChange={(v) => form.setValues({ ...form.values, startTime: v })}
             />
             {form.values.lapTimes &&
               form.values.lapTimes.map((time, i) => (

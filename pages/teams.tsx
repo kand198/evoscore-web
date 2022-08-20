@@ -42,7 +42,13 @@ const Teams = () => {
     const { school, name } = values;
     const vehicleClass = parseInt(values.class);
     const vehicleType = parseInt(values.type);
-    const newEditTeam = { ...editTeam, school, name, class: vehicleClass, type: vehicleType };
+    const newEditTeam = {
+      ...editTeam,
+      school,
+      name,
+      class: vehicleClass,
+      type: vehicleType,
+    };
     updateTeam(newEditTeam);
     setEditTeam(undefined);
   };

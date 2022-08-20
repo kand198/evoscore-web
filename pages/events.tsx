@@ -9,9 +9,7 @@ const Events = () => {
       <Group>
         {events?.map((e, i) => (
           <Link passHref href={e.path} key={i}>
-            <Anchor href={e.path}>
-              {e.name}
-            </Anchor>
+            <Anchor href={e.path}>{e.name}</Anchor>
           </Link>
         ))}
       </Group>

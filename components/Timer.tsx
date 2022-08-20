@@ -20,15 +20,16 @@ const Timer = (props: TimerProps) => {
   const { teams, updateTeam, laps } = useCompetition();
   const { mode } = props;
 
-
-  return <Stack>
-    {teams?.map((t) => (
-      <Group key={t.name} className="justify-between">
-        <Text>{t.name}</Text>
-        <TimerControls team={t} mode={mode} />
-      </Group>
-    ))}
-  </Stack>;
+  return (
+    <Stack>
+      {teams?.map((t) => (
+        <Group key={t.name} className='justify-between'>
+          <Text>{t.name}</Text>
+          <TimerControls team={t} mode={mode} />
+        </Group>
+      ))}
+    </Stack>
+  );
 };
 
 export default Timer;
