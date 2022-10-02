@@ -1,5 +1,5 @@
 import { Button, Checkbox, Text } from '@mantine/core';
-import { useForm } from '@mantine/hooks';
+import { useForm } from '@mantine/form';
 import { useEffect } from 'react';
 import { Activity } from 'tabler-icons-react';
 import useEcu from '../lib/EcuContext';
@@ -16,10 +16,7 @@ const EnergyFetch = () => {
     },
   });
 
-  const submitEnergyRequest = (values: {
-    startTime: string;
-    endTime: string;
-  }) => {
+  const submitEnergyRequest = (values: { startTime: string; endTime: string }) => {
     const { startTime, endTime } = values;
     const startTimeDate = new Date(parseInt(startTime));
     const endTimeDate = new Date(parseInt(endTime));
@@ -42,10 +39,7 @@ const EnergyFetch = () => {
   }, [ecuTeam]);
 
   return (
-    <form
-      onSubmit={timeForm.onSubmit((values) => submitEnergyRequest(values))}
-      className='w-full flex flex-row flex-wrap gap-y-2 gap-x-2 items-end'
-    >
+    <form onSubmit={timeForm.onSubmit((values) => submitEnergyRequest(values))} className='w-full flex flex-row flex-wrap gap-y-2 gap-x-2 items-end'>
       <DateTimeInput
         label='From:'
         value={parseInt(timeForm.values.startTime)}
@@ -57,16 +51,9 @@ const EnergyFetch = () => {
       <DateTimeInput
         label='To:'
         value={parseInt(timeForm.values.endTime)}
-        onChange={(v) =>
-          timeForm.setValues({ ...timeForm.values, endTime: v.toString() })
-        }
+        onChange={(v) => timeForm.setValues({ ...timeForm.values, endTime: v.toString() })}
       />
-      <Button
-        type='submit'
-        className='bg-blue-600 hover:bg-blue-800'
-        disabled={ecuState !== 'Ready'}
-        leftIcon={<Activity />}
-      >
+      <Button type='submit' className='bg-blue-600 hover:bg-blue-800' disabled={ecuState !== 'Ready'} leftIcon={<Activity />}>
         <Text>Get Energy</Text>
       </Button>
     </form>

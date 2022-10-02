@@ -1,13 +1,4 @@
-import {
-  Alert,
-  Group,
-  Stack,
-  Title,
-  Button,
-  Text,
-  Indicator,
-  DefaultMantineColor,
-} from '@mantine/core';
+import { Alert, Group, Stack, Title, Button, Text, Indicator, DefaultMantineColor } from '@mantine/core';
 import Link from 'next/link';
 import { useMemo } from 'react';
 import { Activity, Clock, Refresh, Trash } from 'tabler-icons-react';
@@ -19,15 +10,7 @@ import useEcu from '../lib/EcuContext';
 import { useSerial } from '../lib/SerialProvider';
 
 const ECU = () => {
-  const {
-    ecuState,
-    connect,
-    disconnect,
-    setTime,
-    resetEcu,
-    energyFrames,
-    timeDelta,
-  } = useEcu();
+  const { ecuState, connect, disconnect, setTime, resetEcu, energyFrames, timeDelta } = useEcu();
   const { canUseSerial } = useSerial();
 
   const statusColour: DefaultMantineColor = useMemo(() => {
@@ -52,18 +35,10 @@ const ECU = () => {
         <Text>{ecuState}</Text>
       </Group>
       <Group className='flex-nowrap'>
-        <Button
-          className='bg-blue-600 hover:bg-blue-800'
-          onClick={() => connect()}
-          disabled={ecuState !== 'Disconnected'}
-        >
+        <Button className='bg-blue-600 hover:bg-blue-800' onClick={() => connect()} disabled={ecuState !== 'Disconnected'}>
           Manually Connect
         </Button>
-        <Button
-          className='bg-blue-600 hover:bg-blue-800'
-          onClick={() => disconnect()}
-          disabled={ecuState !== 'Ready'}
-        >
+        <Button className='bg-blue-600 hover:bg-blue-800' onClick={() => disconnect()} disabled={ecuState !== 'Ready'}>
           Disconnect
         </Button>
       </Group>
@@ -73,20 +48,10 @@ const ECU = () => {
   const EcuControls = () => (
     <Group>
       <Text>Time Delta (seconds): {timeDelta}</Text>
-      <Button
-        className='bg-blue-600 hover:bg-blue-800'
-        onClick={() => setTime(Date.now())}
-        disabled={ecuState !== 'Ready'}
-        leftIcon={<Clock />}
-      >
+      <Button className='bg-blue-600 hover:bg-blue-800' onClick={() => setTime(Date.now())} disabled={ecuState !== 'Ready'} leftIcon={<Clock />}>
         <Text>Sync Time</Text>
       </Button>
-      <Button
-        className='bg-red-600 hover:bg-red-800'
-        onClick={() => resetEcu()}
-        disabled={ecuState !== 'Ready'}
-        leftIcon={<Trash />}
-      >
+      <Button className='bg-red-600 hover:bg-red-800' onClick={() => resetEcu()} disabled={ecuState !== 'Ready'} leftIcon={<Trash />}>
         <Text>Reset</Text>
       </Button>
     </Group>
@@ -104,19 +69,10 @@ const ECU = () => {
           <EcuChart energyFrames={energyFrames} />
         </Stack>
       ) : (
-        <Alert
-          title='Incompatible Browser Detected!'
-          color='red'
-          className='w-fit m-auto'
-          variant='filled'
-        >
-          It seems that your browser doesn&#39;t support the{' '}
-          <Link href='https://developer.mozilla.org/en-US/docs/Web/API/Web_Serial_API'>
-            Web Serial API.
-          </Link>
+        <Alert title='Incompatible Browser Detected!' color='red' className='w-fit m-auto' variant='filled'>
+          It seems that your browser doesn&#39;t support the <Link href='https://developer.mozilla.org/en-US/docs/Web/API/Web_Serial_API'>Web Serial API.</Link>
           <br />
-          Please,{' '}
-          <Link href='https://developer.mozilla.org/en-US/docs/Web/API/Web_Serial_API#browser_compatibility'>
+          Please, <Link href='https://developer.mozilla.org/en-US/docs/Web/API/Web_Serial_API#browser_compatibility'>
             check if your browser is compatible
           </Link>{' '}
           and try again!

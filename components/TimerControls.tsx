@@ -1,11 +1,6 @@
 import { Group, ActionIcon } from '@mantine/core';
 import { useEffect, useRef, useState } from 'react';
-import {
-  PlayerPlay,
-  TrashX,
-  PlayerStop,
-  PlayerTrackNext,
-} from 'tabler-icons-react';
+import { PlayerPlay, TrashX, PlayerStop, PlayerTrackNext } from 'tabler-icons-react';
 import { useCompetition } from '../lib/CompetitionProvider';
 import Team from '../lib/TeamInterface';
 import LapTimeDisplay from './LapTimeDisplay';
@@ -19,37 +14,34 @@ const TimerControls = (props: { team: Team; mode: TimerMode }) => {
   const { team, mode } = props;
 
   const getTotalTime = () => {
-    return team.events.efficiency.lapTimes?.reduce(
-      (total, time) => (total += time),
-      0
-    );
+    return team.events.endurance.lapTimes?.reduce((total, time) => (total += time), 0);
   };
 
   const getRunningTime = () => {
     // console.log(team.events.efficiency.lapTimes);
-    if (team.events.efficiency.running) {
-      return Date.now() - team.events.efficiency.startTime;
+    if (team.events.endurance.running) {
+      return Date.now() - team.events.endurance.startTime;
     }
     return getTotalTime();
   };
 
   const handleTimerStart = () => {
     const newTeam = { ...team };
-    newTeam.events.efficiency.running = true;
-    newTeam.events.efficiency.startTime = Date.now();
+    newTeam.events.endurance.running = true;
+    newTeam.events.endurance.startTime = Date.now();
     updateTeam(newTeam);
   };
 
   const handleTimerStop = () => {
     const newTeam = { ...team };
-    newTeam.events.efficiency.running = false;
+    newTeam.events.endurance.running = false;
     updateTeam(newTeam);
   };
 
   const handleReset = () => {
     const newTeam = { ...team };
-    newTeam.events.efficiency.running = false;
-    newTeam.events.efficiency.lapTimes = [];
+    newTeam.events.endurance.running = false;
+    newTeam.events.endurance.lapTimes = [];
     lapTimesRef.current = [];
     updateTeam(newTeam);
   };
@@ -57,7 +49,7 @@ const TimerControls = (props: { team: Team; mode: TimerMode }) => {
   const handleLap = () => {
     lapTimesRef.current.push(0);
     const newTeam = { ...team };
-    newTeam.events.efficiency.lapTimes = lapTimesRef.current;
+    newTeam.events.endurance.lapTimes = lapTimesRef.current;
     updateTeam(newTeam);
   };
 
@@ -66,14 +58,13 @@ const TimerControls = (props: { team: Team; mode: TimerMode }) => {
       const index = Math.max(lapTimesRef.current.length - 1, 0);
       const previousLaps = lapTimesRef.current.slice(0, -1);
       const previousLapsTotal = previousLaps.reduce((l, c) => l + c, 0);
-      lapTimesRef.current[index] =
-        Date.now() - (team.events.efficiency.startTime + previousLapsTotal);
+      lapTimesRef.current[index] = Date.now() - (team.events.endurance.startTime + previousLapsTotal);
       const newTeam = { ...team };
-      newTeam.events.efficiency.lapTimes = lapTimesRef.current;
+      newTeam.events.endurance.lapTimes = lapTimesRef.current;
       updateTeam(newTeam);
     };
 
-    if (team.events.efficiency.running) {
+    if (team.events.endurance.running) {
       setTimerState('running');
       timerRef.current = setInterval(() => upCount(), 16);
     } else {
@@ -87,17 +78,13 @@ const TimerControls = (props: { team: Team; mode: TimerMode }) => {
 
   return (
     <Group>
-      {team.events.efficiency.lapTimes.map((lt, i) => (
+      {team.events.endurance.lapTimes.map((lt, i) => (
         <LapTimeDisplay key={i} value={lt} />
       ))}
       <LapTimeDisplay value={getRunningTime()} />
       {timerState === 'stopped' && (
         <>
-          <ActionIcon
-            className=''
-            onClick={handleTimerStart}
-            disabled={team.events.efficiency.lapTimes.length > 0}
-          >
+          <ActionIcon className='' onClick={handleTimerStart} disabled={team.events.endurance.lapTimes.length > 0}>
             <PlayerPlay size={32} />
           </ActionIcon>
           <ActionIcon className='' onClick={handleReset}>

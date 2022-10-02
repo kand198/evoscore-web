@@ -1,12 +1,6 @@
 import { ActionIcon, Group, Stack, Text } from '@mantine/core';
 import { useState } from 'react';
-import {
-  PlayerPause,
-  PlayerPlay,
-  PlayerStop,
-  PlayerTrackNext,
-  TrashX,
-} from 'tabler-icons-react';
+import { PlayerPause, PlayerPlay, PlayerStop, PlayerTrackNext, TrashX } from 'tabler-icons-react';
 import { useCompetition } from '../lib/CompetitionProvider';
 import TimerControls from './TimerControls';
 

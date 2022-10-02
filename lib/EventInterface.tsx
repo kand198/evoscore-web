@@ -1,5 +1,5 @@
 export default interface EventInterface {
-  drag: number;
+  drag: number[];
   gymkhana: {
     times: number[];
     running: boolean;
@@ -7,10 +7,12 @@ export default interface EventInterface {
     bonus: number;
     loss: number;
   };
-  efficiency: {
+  endurance: {
     startTime: number;
     lapTimes: number[];
     running: boolean;
+  };
+  efficiency: {
     energy: number;
   };
 }
@@ -25,10 +27,12 @@ export const emptyEvents = () => {
       bonus: 0,
       loss: 0,
     },
-    efficiency: {
+    endurance: {
       startTime: 0,
       lapTimes: [],
       running: false,
+    },
+    efficiency: {
       energy: 0,
     },
   };

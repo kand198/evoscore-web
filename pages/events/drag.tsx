@@ -1,14 +1,12 @@
-import { Anchor, Breadcrumbs, Group, MultiSelect, NumberInput, Select, Stack, Title } from '@mantine/core';
+import { Anchor, Breadcrumbs, Group, MultiSelect, Select, Stack, Title } from '@mantine/core';
 import Link from 'next/link';
 import { useState } from 'react';
-import EnduranceTable from '../../components/EnduranceTable';
-import { useCompetition } from '../../lib/CompetitionProvider';
+import DragTable from '../../components/DragTable';
 import { defaultFilters, Filter } from '../../lib/Filters';
 
-const Endurance = () => {
-  const { laps, setLaps } = useCompetition();
+const Drag = () => {
   const [sort, setSort] = useState('number');
-  const [filters, setFilters] = useState<Filter[]>([...defaultFilters]);
+  const [filters, setFilters] = useState<Filter[]>(defaultFilters);
 
   return (
     <Stack>
@@ -16,19 +14,17 @@ const Endurance = () => {
         <Link passHref href='/events' key={0}>
           <Anchor>Events</Anchor>
         </Link>
-        <Link passHref href='/events/Endurance' key={1}>
-          <Anchor>Endurance</Anchor>
+        <Link passHref href='/events/drag' key={1}>
+          <Anchor>Drag</Anchor>
         </Link>
       </Breadcrumbs>
       <Group className='items-center'>
-        <Title>Endurance</Title>
-        <NumberInput value={laps} onChange={(val) => setLaps(val)} label='Number of Laps' />
+        <Title>Drag</Title>
         <Select
           label='Sort By'
           data={[
             { value: 'number', label: 'Race Number' },
-            { value: 'laps', label: 'Number of Laps' },
-            { value: 'time', label: 'Time' },
+            { value: 'time', label: 'Quickest Time' },
           ]}
           defaultValue='number'
           value={sort}
@@ -44,9 +40,9 @@ const Endurance = () => {
           clearable
         />
       </Group>
-      <EnduranceTable sortBy={sort} filters={filters} />
+      <DragTable sortBy={sort} filters={filters} />
     </Stack>
   );
 };
 
-export default Endurance;
+export default Drag;

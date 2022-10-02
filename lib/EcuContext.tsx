@@ -1,13 +1,4 @@
-import {
-  createContext,
-  ReactNode,
-  useCallback,
-  useContext,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from 'react';
+import { createContext, ReactNode, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { useCompetition } from './CompetitionProvider';
 import {
   encodeRequest,
@@ -20,25 +11,13 @@ import {
   parseResponse,
 } from './evo_proto';
 import useNotifications from './NotificationContext';
-import {
-  ConfigContent,
-  StatusResponse,
-  Response,
-  Request,
-  EnergyFrame,
-} from './proto/evolocity';
+import { ConfigContent, StatusResponse, Response, Request, EnergyFrame } from './proto/evolocity';
 import { PortState, SerialMessage, useSerial } from './SerialProvider';
 import Team from './TeamInterface';
 import { Text, useMantineDefaultProps } from '@mantine/core';
 import * as _m0 from 'protobufjs/minimal';
 
-export type EcuState =
-  | 'Disconnected'
-  | 'Fetching Status'
-  | 'Fetching Config'
-  | 'Sending Config'
-  | 'Fetching Energy'
-  | 'Ready';
+export type EcuState = 'Disconnected' | 'Fetching Status' | 'Fetching Config' | 'Sending Config' | 'Fetching Energy' | 'Ready';
 
 export type EcuInfo = {
   config: ConfigContent;
@@ -92,12 +71,7 @@ export const EcuProvider = ({ children }: EcuProviderProps) => {
 
   const addEnergyFrames = (ef: EnergyFrame[]) => {
     const newEfTimestamps = ef.map((ef) => ef.endTimestamp);
-    energyFramesRef.current = [
-      ...ef,
-      ...energyFramesRef.current.filter(
-        (frame) => !newEfTimestamps.includes(frame.endTimestamp)
-      ),
-    ];
+    energyFramesRef.current = [...ef, ...energyFramesRef.current.filter((frame) => !newEfTimestamps.includes(frame.endTimestamp))];
     setEnergyFrames(energyFramesRef.current);
   };
 
@@ -108,8 +82,7 @@ export const EcuProvider = ({ children }: EcuProviderProps) => {
 
   const updateTeamEnergy = useCallback(() => {
     const newTeam = { ...team };
-    newTeam.events.efficiency.energy =
-      energyFrames.reduce((p, c) => p + c.totalEnergy, 0) / 60 / 60;
+    newTeam.events.endurance.energy = energyFrames.reduce((p, c) => p + c.totalEnergy, 0) / 60 / 60;
     updateTeam(newTeam);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [energyFrames, team]);
@@ -139,11 +112,7 @@ export const EcuProvider = ({ children }: EcuProviderProps) => {
   useEffect(() => {
     const uidToResend = request?.uid;
     const timeout = setTimeout(() => {
-      if (
-        activeRequest.current !== undefined &&
-        activeRequest.current.uid === uidToResend
-      )
-        sendRequest(activeRequest.current);
+      if (activeRequest.current !== undefined && activeRequest.current.uid === uidToResend) sendRequest(activeRequest.current);
     }, 5000);
     return () => clearTimeout(timeout);
   }, [request, sendRequest]);
@@ -184,10 +153,7 @@ export const EcuProvider = ({ children }: EcuProviderProps) => {
     [sendRequest]
   );
 
-  const setTime = useCallback(
-    (t: number) => sendRequest(getTimeSetRequest(0)),
-    [sendRequest]
-  );
+  const setTime = useCallback((t: number) => sendRequest(getTimeSetRequest(0)), [sendRequest]);
 
   const getEnergyFrames = useCallback(
     (r?: [s: number, e: number]) => {
@@ -197,10 +163,7 @@ export const EcuProvider = ({ children }: EcuProviderProps) => {
     [sendRequest]
   );
 
-  const resetEcu = useCallback(
-    () => sendRequest(getResetRequest()),
-    [sendRequest]
-  );
+  const resetEcu = useCallback(() => sendRequest(getResetRequest()), [sendRequest]);
 
   useEffect(() => {
     if (portState === 'open') {
@@ -244,10 +207,7 @@ export const EcuProvider = ({ children }: EcuProviderProps) => {
         console.log('timeout cleared');
         activeRequest.current = undefined;
         setRequest(activeRequest.current);
-        if (
-          response.config !== undefined &&
-          response.config.content !== undefined
-        ) {
+        if (response.config !== undefined && response.config.content !== undefined) {
           console.log('Config Received', response.config.content);
           setEcuInfo({ ...ecuInfo, config: response.config.content });
         }
@@ -258,31 +218,17 @@ export const EcuProvider = ({ children }: EcuProviderProps) => {
         if (response.ack !== undefined) {
           console.log('Ack Received');
         }
-        if (
-          response.energy !== undefined &&
-          response.energy.frames !== undefined
-        ) {
+        if (response.energy !== undefined && response.energy.frames !== undefined) {
           console.log('Energy Received', response.energy.frames);
           addEnergyFrames(response.energy.frames);
-          if (
-            response.energy.frames.length == 16 &&
-            response.energy.frames[response.energy.frames.length - 1]
-              .endTimestamp < timeRange.current[1]
-          )
-            getEnergyFrames([
-              response.energy.frames[response.energy.frames.length - 1]
-                .endTimestamp + 1,
-              timeRange.current[1],
-            ]);
+          if (response.energy.frames.length == 16 && response.energy.frames[response.energy.frames.length - 1].endTimestamp < timeRange.current[1])
+            getEnergyFrames([response.energy.frames[response.energy.frames.length - 1].endTimestamp + 1, timeRange.current[1]]);
           else {
             timeRange.current = [0, 0];
             updateTeamEnergy();
           }
         }
-        if (response.timestamp !== undefined)
-          setTimeDelta(
-            new Date(Date.now() / 1000 - response.timestamp).getTime()
-          );
+        if (response.timestamp !== undefined) setTimeDelta(new Date(Date.now() / 1000 - response.timestamp).getTime());
       } else {
         console.log('mismatch');
         sendRequest(activeRequest.current);
@@ -294,12 +240,9 @@ export const EcuProvider = ({ children }: EcuProviderProps) => {
   const inputHandler = useCallback(
     (message: SerialMessage) => {
       const oldRef = inputArrayRef.current;
-      const appendMode =
-        inputArrayRef.current !== undefined && inputArrayRef.current.length;
+      const appendMode = inputArrayRef.current !== undefined && inputArrayRef.current.length;
       if (appendMode) {
-        inputArrayRef.current = new Uint8Array(
-          oldRef.length + message.value.length
-        );
+        inputArrayRef.current = new Uint8Array(oldRef.length + message.value.length);
         inputArrayRef.current.set(oldRef);
         inputArrayRef.current.set(message.value, oldRef.length);
       } else {
@@ -311,14 +254,10 @@ export const EcuProvider = ({ children }: EcuProviderProps) => {
         const encodedLength = lengthReader.uint32();
         const offset = lengthReader.pos;
 
-        const fullMessageReceived =
-          inputArrayRef.current.length - offset >= encodedLength;
+        const fullMessageReceived = inputArrayRef.current.length - offset >= encodedLength;
 
         if (fullMessageReceived) {
-          const input = inputArrayRef.current.slice(
-            offset,
-            encodedLength + offset
-          );
+          const input = inputArrayRef.current.slice(offset, encodedLength + offset);
           const newRef = inputArrayRef.current.slice(encodedLength + offset);
           inputArrayRef.current = newRef;
 
@@ -369,21 +308,7 @@ export const EcuProvider = ({ children }: EcuProviderProps) => {
       resetEcu,
       timeDelta,
     }),
-    [
-      connect,
-      disconnect,
-      ecuInfo,
-      ecuState,
-      refreshEcu,
-      setEcuTeam,
-      setTime,
-      energyFrames,
-      getEnergyFrames,
-      clearEnergyFrames,
-      resetEcu,
-      team,
-      timeDelta,
-    ]
+    [connect, disconnect, ecuInfo, ecuState, refreshEcu, setEcuTeam, setTime, energyFrames, getEnergyFrames, clearEnergyFrames, resetEcu, team, timeDelta]
   );
 
   return <EcuContext.Provider value={value}>{children}</EcuContext.Provider>;

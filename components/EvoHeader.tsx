@@ -1,16 +1,7 @@
-import {
-  Burger,
-  Header,
-  MediaQuery,
-  Text,
-  useMantineTheme,
-} from '@mantine/core';
+import { Burger, Header, MediaQuery, Text, useMantineTheme } from '@mantine/core';
 import Head from 'next/head';
 
-const EvoHeader = (props: {
-  opened: boolean;
-  setOpened: (open: boolean) => void;
-}) => {
+const EvoHeader = (props: { opened: boolean; setOpened: (open: boolean) => void }) => {
   const theme = useMantineTheme();
   const { opened, setOpened } = props;
   return (
@@ -21,13 +12,7 @@ const EvoHeader = (props: {
       </Head>
       <div style={{ display: 'flex', alignItems: 'center', height: '100%' }}>
         <MediaQuery largerThan='sm' styles={{ display: 'none' }}>
-          <Burger
-            opened={opened}
-            onClick={() => setOpened(!opened)}
-            size='sm'
-            color={theme.colors.gray[6]}
-            mr='xl'
-          />
+          <Burger opened={opened} onClick={() => setOpened(!opened)} size='sm' color={theme.colors.gray[6]} mr='xl' />
         </MediaQuery>
         <Text>EVoScore</Text>
       </div>

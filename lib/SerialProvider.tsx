@@ -4,15 +4,7 @@
  * Thank you, Josh!
  */
 
-import {
-  createContext,
-  PropsWithChildren,
-  useCallback,
-  useContext,
-  useEffect,
-  useRef,
-  useState,
-} from 'react';
+import { createContext, PropsWithChildren, useCallback, useContext, useEffect, useRef, useState } from 'react';
 
 // RESOURCES:
 // https://web.dev/serial/
@@ -52,9 +44,7 @@ export const SerialContext = createContext<SerialContextValue>({
 export const useSerial = () => useContext(SerialContext);
 
 interface SerialProviderProps {}
-const SerialProvider = ({
-  children,
-}: PropsWithChildren<SerialProviderProps>) => {
+const SerialProvider = ({ children }: PropsWithChildren<SerialProviderProps>) => {
   const portFilter = {
     usbVendorId: 0x10c4,
     usbProductId: 0xea60,
@@ -188,9 +178,7 @@ const SerialProvider = ({
       setPortState('opening');
       const availablePorts = await navigator.serial.getPorts();
       if (availablePorts.length) {
-        const port = availablePorts.find(
-          (port) => port.getInfo().usbVendorId === portFilter.usbVendorId
-        );
+        const port = availablePorts.find((port) => port.getInfo().usbVendorId === portFilter.usbVendorId);
         await openPort(port);
         return true;
       } else {
@@ -273,12 +261,7 @@ const SerialProvider = ({
 
   // Tries to auto-connect to a port, if possible
   useEffect(() => {
-    if (
-      canUseSerial &&
-      !hasManuallyDisconnected &&
-      !hasTriedAutoconnect &&
-      portState === 'closed'
-    ) {
+    if (canUseSerial && !hasManuallyDisconnected && !hasTriedAutoconnect && portState === 'closed') {
       autoConnectToPort();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -288,15 +271,10 @@ const SerialProvider = ({
     if (canUseSerial) {
       setCanUseSerial(true);
       // Always try to auto-connect when a port has just been connected
-      navigator.serial.addEventListener('connect', (event) =>
-        autoConnectToPort()
-      );
+      navigator.serial.addEventListener('connect', (event) => autoConnectToPort());
     }
     return () => {
-      if (canUseSerial)
-        navigator.serial.removeEventListener('connect', (event) =>
-          autoConnectToPort()
-        );
+      if (canUseSerial) navigator.serial.removeEventListener('connect', (event) => autoConnectToPort());
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [canUseSerial]);

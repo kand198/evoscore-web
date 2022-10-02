@@ -1,6 +1,5 @@
-import { InputWrapper, Input, NumberInput, Group } from '@mantine/core';
+import { Input, Group } from '@mantine/core';
 import { DatePicker, TimeInput } from '@mantine/dates';
-import dayjs from 'dayjs';
 
 export interface DateTimeInputProps {
   required?: boolean;
@@ -31,38 +30,16 @@ const DateTimeInput = (props: DateTimeInputProps) => {
     return d;
   };
 
-  const onDateChange =
-    onChange !== undefined
-      ? (n) => onChange(compileDateChange(n).getTime())
-      : () => {};
-  const onTimeChange =
-    onChange !== undefined
-      ? (n) => onChange(compileTimeChange(n).getTime())
-      : () => {};
+  const onDateChange = onChange !== undefined ? (n) => onChange(compileDateChange(n).getTime()) : () => {};
+  const onTimeChange = onChange !== undefined ? (n) => onChange(compileTimeChange(n).getTime()) : () => {};
 
   return (
-    <InputWrapper required={required} label={label} placeholder={placeHolder}>
-      <Group className='flex-nowrap max-w-sm gap-x-1'>
-        <DatePicker
-          placeholder='Pick date'
-          label='Date'
-          value={time}
-          onChange={onDateChange}
-          className='grow'
-          required
-        />
-        <TimeInput
-          placeholder='Pick time'
-          format='12'
-          label='Time'
-          value={time}
-          onChange={onTimeChange}
-          className='shrink min-w-0'
-          withSeconds
-          required
-        />
+    <Input.Wrapper required={required} label={label} placeholder={placeHolder}>
+      <Group className='flex-nowrap max-w-sm gap-x-1 overflow-x-hidden'>
+        <DatePicker placeholder='Pick date' label='Date' value={time} onChange={onDateChange} className='grow' required dropdownType='modal' />
+        <TimeInput placeholder='Pick time' format='12' label='Time' value={time} onChange={onTimeChange} className='shrink min-w-0' withSeconds required />
       </Group>
-    </InputWrapper>
+    </Input.Wrapper>
   );
 };
 

@@ -3,11 +3,12 @@ import { VehicleClass } from './proto/evolocity';
 
 export enum VehicleType {
   BIKE = 0,
-  TRIKE = 1,
-  KART = 2,
+  KART = 1,
+  UNRECOGNIZED = -1,
 }
 export default interface Team {
   id: number;
+  number: number;
   school: string;
   class: VehicleClass;
   type?: VehicleType;
@@ -18,8 +19,10 @@ export default interface Team {
 export const emptyTeam = (): Team => {
   return {
     id: -1,
+    number: -1,
     school: '',
     class: VehicleClass.UNRECOGNIZED,
+    type: VehicleType.UNRECOGNIZED,
     name: '',
     events: emptyEvents(),
   };
@@ -35,6 +38,5 @@ export const vehicleClassMap = new Map<VehicleClass, string>([
 export const vehicleTypeMap = new Map<VehicleType | undefined, string>([
   [undefined, 'Unknown'],
   [VehicleType.BIKE, 'Bike'],
-  [VehicleType.TRIKE, 'Trike'],
   [VehicleType.KART, 'Kart'],
 ]);
