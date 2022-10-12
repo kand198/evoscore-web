@@ -1,4 +1,4 @@
-import { ActionIcon, Button, Group, Modal, NumberInput, ScrollArea, Space, Table } from '@mantine/core';
+import { ActionIcon, Button, Group, Modal, NumberInput, ScrollArea, Space, Table, Title } from '@mantine/core';
 import { useForm } from '@mantine/form';
 import { useEffect, useState } from 'react';
 import { Trash } from 'tabler-icons-react';
@@ -127,7 +127,16 @@ const EfficiencyTable = ({ sortBy, filters }: { sortBy?: string; filters?: Filte
         </Table>
         <Space h='md' />
       </ScrollArea>
-      <Modal opened={editTeam !== undefined} onClose={() => setEditTeam(undefined)} title='Edit Team Details'>
+      <Modal
+        opened={editTeam !== undefined}
+        onClose={() => setEditTeam(undefined)}
+        title={
+          <Title order={3}>
+            {editTeam?.number ? '#' + editTeam?.number + ' ' : ''}
+            {editTeam?.name}
+          </Title>
+        }
+      >
         <form onSubmit={form.onSubmit((values) => submitEdit(values))}>
           <ScrollArea>
             <NumberInput

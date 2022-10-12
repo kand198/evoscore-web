@@ -1,33 +1,30 @@
-import { Anchor, Card, Group, MultiSelect, Select, Stack, Title } from '@mantine/core';
+import { Anchor, Breadcrumbs, Group, MultiSelect, Select, Stack, Title } from '@mantine/core';
 import Link from 'next/link';
 import { useState } from 'react';
-import LeaderboardTable from '../components/LeaderboardTable';
-import { defaultFilters, Filter } from '../lib/Filters';
-import { events } from '../lib/pages';
+import TechnicalReportTable from '../../components/TechnicalReportTable';
+import { defaultFilters, Filter } from '../../lib/Filters';
 
-const Events = () => {
+const TechnicalReport = () => {
   const [sort, setSort] = useState('number');
   const [filters, setFilters] = useState<Filter[]>(defaultFilters);
 
   return (
     <Stack>
-      <Title>Events</Title>
-      <Group>
-        {events?.map((e, i) => (
-          <Link passHref href={e.path} key={i}>
-            <Card shadow='sm' p='xl' radius='sm' component='a' className='hover:shadow-xl hover:cursor-pointer hover:scale-105 transition'>
-              <Title order={3}>{e.name}</Title>
-            </Card>
-          </Link>
-        ))}
-      </Group>
-      <Group>
-        <Title order={2}>Leaderboard</Title>
+      <Breadcrumbs>
+        <Link passHref href='/events' key={0}>
+          <Anchor>Events</Anchor>
+        </Link>
+        <Link passHref href='/events/technical-report' key={1}>
+          <Anchor>Technical Report</Anchor>
+        </Link>
+      </Breadcrumbs>
+      <Group className='items-center'>
+        <Title>Technical Report</Title>
         <Select
           label='Sort By'
           data={[
             { value: 'number', label: 'Race Number' },
-            { value: 'points', label: 'Most Points' },
+            { value: 'score', label: 'Score' },
           ]}
           defaultValue='number'
           value={sort}
@@ -43,9 +40,9 @@ const Events = () => {
           clearable
         />
       </Group>
-      <LeaderboardTable sortBy={sort} filters={filters} />
+      <TechnicalReportTable sortBy={sort} filters={filters} />
     </Stack>
   );
 };
 
-export default Events;
+export default TechnicalReport;

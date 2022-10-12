@@ -1,4 +1,4 @@
-import { ActionIcon, Button, Group, Modal, ScrollArea, Space, Table, Text, Title } from '@mantine/core';
+import { ActionIcon, Button, Group, Modal, NumberInput, ScrollArea, Space, Table, Title } from '@mantine/core';
 import { useForm } from '@mantine/form';
 import { useEffect, useState } from 'react';
 import { useCompetition } from '../lib/CompetitionProvider';
@@ -9,7 +9,7 @@ import LapTimeInput from './LapTimeInput';
 import { Trash } from 'tabler-icons-react';
 import LapTimeDisplay from './LapTimeDisplay';
 
-const DragTable = ({ sortBy, filters }: { sortBy?: string; filters?: Filter[] }) => {
+const TechnicalReportTable = ({ sortBy, filters }: { sortBy?: string; filters?: Filter[] }) => {
   const { teams, updateTeam } = useCompetition();
   const [editTeam, setEditTeam] = useState<Team | undefined>(undefined);
 
@@ -20,8 +20,8 @@ const DragTable = ({ sortBy, filters }: { sortBy?: string; filters?: Filter[] })
       return 0;
     }
     switch (sortBy) {
-      case 'time':
-        return Math.min(...a.events.drag) - Math.min(...b.events.drag);
+      case 'score':
+        return Math.min(b.events.technicalReport) - Math.min(a.events.technicalReport);
       case 'number':
       default:
         return a.number - b.number;
@@ -30,15 +30,14 @@ const DragTable = ({ sortBy, filters }: { sortBy?: string; filters?: Filter[] })
 
   const form = useForm({
     initialValues: {
-      lapTimes: [{ time: 0 }],
+      score: 0,
     },
   });
 
-  const submitEdit = (values: { lapTimes: { time: number }[] }) => {
-    const newLapTimes: number[] = [...values.lapTimes.map((s) => Math.max(s.time, 0)).filter((n) => n !== 0)];
+  const submitEdit = (values: { score: number }) => {
     const events: EventInterface = {
       ...editTeam.events,
-      drag: newLapTimes,
+      technicalReport: values.score ?? 0,
     };
     const newEditTeam = { ...editTeam, events };
     updateTeam(newEditTeam);
@@ -48,18 +47,14 @@ const DragTable = ({ sortBy, filters }: { sortBy?: string; filters?: Filter[] })
   useEffect(() => {
     if (editTeam) {
       const values = {
-        lapTimes: editTeam.events.drag
-          ? editTeam.events.drag.map((lt) => ({
-              time: lt,
-            }))
-          : [],
+        score: editTeam.events.technicalReport,
       };
       form.setValues(values);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [editTeam]);
 
-  const DragHeader = (
+  const TechnicalReportHeader = (
     <thead>
       <tr>
         <th>Race #</th>
@@ -67,13 +62,11 @@ const DragTable = ({ sortBy, filters }: { sortBy?: string; filters?: Filter[] })
         <th>School</th>
         <th>Class</th>
         <th>Type</th>
-        {Array.from({ length: 5 }, (_, i) => i).map((i) => (
-          <th key={i}>Run {i + 1}</th>
-        ))}
+        <th>Score</th>
       </tr>
     </thead>
   );
-  const DragBody = (
+  const TechnicalReportBody = (
     <tbody>
       {sortedTeams?.map((team) => {
         return (
@@ -83,11 +76,7 @@ const DragTable = ({ sortBy, filters }: { sortBy?: string; filters?: Filter[] })
             <td>{team.school}</td>
             <td>{vehicleClassMap.get(team.class)}</td>
             <td>{vehicleTypeMap.get(team.type)}</td>
-            <td>{<LapTimeDisplay value={team.events.drag[0]} />}</td>
-            <td>{<LapTimeDisplay value={team.events.drag[1]} />}</td>
-            <td>{<LapTimeDisplay value={team.events.drag[2]} />}</td>
-            <td>{<LapTimeDisplay value={team.events.drag[3]} />}</td>
-            <td>{<LapTimeDisplay value={team.events.drag[4]} />}</td>
+            <td>{team.events.technicalReport}</td>
           </tr>
         );
       })}
@@ -98,8 +87,8 @@ const DragTable = ({ sortBy, filters }: { sortBy?: string; filters?: Filter[] })
     <>
       <ScrollArea className='relative'>
         <Table className='overflow-x-scroll whitespace-nowrap'>
-          {DragHeader}
-          {DragBody}
+          {TechnicalReportHeader}
+          {TechnicalReportBody}
         </Table>
         <Space h='md' />
       </ScrollArea>
@@ -115,36 +104,12 @@ const DragTable = ({ sortBy, filters }: { sortBy?: string; filters?: Filter[] })
       >
         <form onSubmit={form.onSubmit((values) => submitEdit(values))}>
           <ScrollArea>
-            {form.values.lapTimes &&
-              form.values.lapTimes.map((_time, i) => (
-                <Group className='flex-nowrap' key={i}>
-                  <LapTimeInput
-                    label={'Lap ' + (i + 1).toString()}
-                    value={form.values.lapTimes[i].time}
-                    onChange={(t) =>
-                      form.setValues({
-                        ...form.values,
-                        lapTimes: form.values.lapTimes.map((s, index) => (i === index ? { time: t } : s)),
-                      })
-                    }
-                  />
-                  <ActionIcon color='red' variant='subtle' className='self-end mb-1' onClick={() => form.removeListItem('lapTimes', i)}>
-                    <Trash size={16} />
-                  </ActionIcon>
-                </Group>
-              ))}
+            <NumberInput label='Score' value={form.values.score} onChange={(s) => form.setValues({ score: s ?? 0 })} min={0} max={20} required />
           </ScrollArea>
           <Space h='md' />
           <Group className='justify-evenly'>
             <Button type='submit' className='bg-blue-600 hover:bg-blue-800'>
               Submit
-            </Button>
-            <Button
-              className='bg-blue-600 hover:bg-blue-800'
-              onClick={() => form.insertListItem('lapTimes', { time: 0 })}
-              disabled={form.values.lapTimes.length >= 5}
-            >
-              Add Time
             </Button>
           </Group>
         </form>
@@ -153,4 +118,4 @@ const DragTable = ({ sortBy, filters }: { sortBy?: string; filters?: Filter[] })
   );
 };
 
-export default DragTable;
+export default TechnicalReportTable;
