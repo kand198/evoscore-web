@@ -12,15 +12,17 @@ export const defaultFilters: Filter[] = [
     value: 'standard',
     label: 'Standard (350W)',
     group: 'Class',
+    active: false,
   },
-  { value: 'open', label: 'Open (1kW)', group: 'Class' },
+  { value: 'open', label: 'Open (1kW)', group: 'Class', active: false },
   {
     value: 'competition',
     label: 'Competition (3kW)',
     group: 'Class',
+    active: false,
   },
-  { value: 'bike', label: 'Bike', group: 'Type' },
-  { value: 'kart', label: 'Kart', group: 'Type' },
+  { value: 'bike', label: 'Bike', group: 'Type', active: false },
+  { value: 'kart', label: 'Kart', group: 'Type', active: false },
 ];
 
 export const teamMeetsFilters = (team: Team, filters: Filter[]) => {

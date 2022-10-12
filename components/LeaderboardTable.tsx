@@ -17,8 +17,21 @@ const LeaderboardTable = ({ sortBy, filters }: { sortBy?: string; filters?: Filt
   const getDragPoints = (team: Team) => {
     const time = Math.min(...team.events.drag);
     if (!time || time === Infinity) return 0;
-    const maxTime = Math.max(...teams.map((t) => Math.min(...t.events.drag)).filter((t) => t && t !== Infinity)) * 1.1;
-    const minTime = Math.min(...teams.map((t) => Math.min(...t.events.drag)).filter((t) => t && t !== Infinity));
+    const vClass = team.class;
+    const vType = team.type;
+    const maxTime =
+      Math.max(
+        ...teams
+          .filter((t) => t.class === vClass && t.type === vType)
+          .map((t) => Math.min(...t.events.drag))
+          .filter((t) => t && t !== Infinity)
+      ) * 1.1;
+    const minTime = Math.min(
+      ...teams
+        .filter((t) => t.class === vClass && t.type === vType)
+        .map((t) => Math.min(...t.events.drag))
+        .filter((t) => t && t !== Infinity)
+    );
     return Math.round(((maxTime - time) / (maxTime - minTime)) * 100);
   };
 
@@ -26,46 +39,85 @@ const LeaderboardTable = ({ sortBy, filters }: { sortBy?: string; filters?: Filt
     const calcFastestGymkhanaTime = (rs) => Math.min(...rs.map((r) => getGymkhanaTimeFromRun(r)));
     const time = calcFastestGymkhanaTime(team.events.gymkhana.runs);
     if (!time || time === Infinity) return 0;
-    const maxTime = Math.max(...teams.map((t) => calcFastestGymkhanaTime(t.events.gymkhana.runs)).filter((t) => t > 0 && t !== Infinity)) * 1.1;
-    const minTime = Math.min(...teams.map((t) => calcFastestGymkhanaTime(t.events.gymkhana.runs)).filter((t) => t > 0 && t !== Infinity));
+    const vClass = team.class;
+    const vType = team.type;
+    const maxTime =
+      Math.max(
+        ...teams
+          .filter((t) => t.class === vClass && t.type === vType)
+          .map((t) => calcFastestGymkhanaTime(t.events.gymkhana.runs))
+          .filter((t) => t > 0 && t !== Infinity)
+      ) * 1.1;
+    const minTime = Math.min(
+      ...teams
+        .filter((t) => t.class === vClass && t.type === vType)
+        .map((t) => calcFastestGymkhanaTime(t.events.gymkhana.runs))
+        .filter((t) => t > 0 && t !== Infinity)
+    );
     return Math.round(((maxTime - time) / (maxTime - minTime)) * 100);
   };
 
   const getEndurancePoints = (team: Team) => {
     const time = getTotalTime(team);
     if (!time || time === Infinity) return 0;
-    const maxTime = Math.max(...teams.map((t) => getTotalTime(t)).filter((t) => t > 0 && t !== Infinity)) * 1.1;
-    const minTime = Math.min(...teams.map((t) => getTotalTime(t)).filter((t) => t > 0 && t !== Infinity));
+    const vClass = team.class;
+    const vType = team.type;
+    const maxTime =
+      Math.max(
+        ...teams
+          .filter((t) => t.class === vClass && t.type === vType)
+          .map((t) => getTotalTime(t))
+          .filter((t) => t > 0 && t !== Infinity)
+      ) * 1.1;
+    const minTime = Math.min(
+      ...teams
+        .filter((t) => t.class === vClass && t.type === vType)
+        .map((t) => getTotalTime(t))
+        .filter((t) => t > 0 && t !== Infinity)
+    );
     return Math.round(((maxTime - time) / (maxTime - minTime)) * 100);
   };
 
   const getEfficiencyPoints = (team: Team) => {
     const energy = team.events.efficiency.energy;
     if (!energy) return 0;
+    const vClass = team.class;
+    const vType = team.type;
     const maxEnergy = Math.max(
-      ...teams.map(
-        ({
-          events: {
-            efficiency: { energy },
-          },
-        }) => energy
-      )
+      ...teams
+        .filter((t) => t.class === vClass && t.type === vType)
+        .map(
+          ({
+            events: {
+              efficiency: { energy },
+            },
+          }) => energy
+        )
     );
     const minEnergy = Math.min(
-      ...teams?.map(
-        ({
-          events: {
-            efficiency: { energy },
-          },
-        }) => energy
-      )
+      ...teams
+        .filter((t) => t.class === vClass && t.type === vType)
+        .map(
+          ({
+            events: {
+              efficiency: { energy },
+            },
+          }) => energy
+        )
     );
     return ((maxEnergy - energy) / (maxEnergy - minEnergy)) * 100;
   };
 
   const getTechnicalReportPoints = (team: Team) => {
     const points = team.events.technicalReport;
-    const maxPoints = Math.max(...teams.map((team) => team.events.technicalReport));
+    const vClass = team.class;
+    const vType = team.type;
+    const maxPoints = Math.max(
+      ...teams
+        .filter((t) => t.class === vClass && t.type === vType)
+        .map((team) => team.events.technicalReport)
+        .filter((t) => t > 0)
+    );
     const minPoints = 0;
     return ((points - minPoints) / (maxPoints - minPoints)) * 100;
   };
