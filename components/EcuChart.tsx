@@ -97,7 +97,7 @@ const EcuChart = ({ energyFrames }: EcuChartProps) => {
           const url = URL.createObjectURL(blob);
           const a = document.createElement('a');
           a.href = url;
-          a.download = 'data.csv';
+          a.download = `${ecuTeam?.number ? ecuTeam?.number + '-' : ''}${ecuTeam?.name.replace(' ', '-') ?? 'unknown-team'}-data.csv`;
           a.click();
           URL.revokeObjectURL(url);
         }
