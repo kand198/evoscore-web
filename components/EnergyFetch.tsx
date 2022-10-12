@@ -1,6 +1,6 @@
-import { Button, Checkbox, Text } from '@mantine/core';
+import { Button, Checkbox, Group, Text } from '@mantine/core';
 import { useForm } from '@mantine/form';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { Activity } from 'tabler-icons-react';
 import useEcu from '../lib/EcuContext';
 import { getTimeRange } from '../lib/TimeHelpers';
@@ -8,55 +8,40 @@ import DateTimeInput from './DateTimeInput';
 
 const EnergyFetch = () => {
   const { ecuTeam, ecuState, getEnergyFrames, clearEnergyFrames } = useEcu();
+  const [startTime, setStartTime] = useState(new Date());
+  const [endTime, setEndTime] = useState(new Date());
 
-  const timeForm = useForm({
-    initialValues: {
-      startTime: Date.now().toString(),
-      endTime: Date.now().toString(),
-    },
-  });
-
-  const submitEnergyRequest = (values: { startTime: string; endTime: string }) => {
-    const { startTime, endTime } = values;
-    const startTimeDate = new Date(parseInt(startTime));
-    const endTimeDate = new Date(parseInt(endTime));
-    const startTimestamp = Math.floor(startTimeDate.getTime() / 1000);
-    const endTimestamp = Math.floor(endTimeDate.getTime() / 1000);
+  const submitEnergyRequest = () => {
+    const startTimestamp = Math.floor(startTime.getTime() / 1000);
+    const endTimestamp = Math.floor(endTime.getTime() / 1000);
     console.log(startTimestamp, endTimestamp);
-    clearEnergyFrames();
-    getEnergyFrames([startTimestamp, endTimestamp]);
+    // clearEnergyFrames();
+    // getEnergyFrames([startTimestamp, endTimestamp]);
   };
 
   useEffect(() => {
     if (ecuTeam !== undefined) {
       const [startTimeNum, endTimeNum] = getTimeRange(ecuTeam);
-      timeForm.setValues({
-        startTime: startTimeNum.toString(),
-        endTime: endTimeNum.toString(),
-      });
+      setStartTime(new Date(startTimeNum));
+      setEndTime(new Date(endTimeNum));
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [ecuTeam]);
 
   return (
-    <form onSubmit={timeForm.onSubmit((values) => submitEnergyRequest(values))} className='w-full flex flex-row flex-wrap gap-y-2 gap-x-2 items-end'>
-      <DateTimeInput
-        label='From:'
-        value={parseInt(timeForm.values.startTime)}
-        onChange={(v) => {
-          console.log(v);
-          timeForm.setValues({ ...timeForm.values, startTime: v.toString() });
-        }}
-      />
-      <DateTimeInput
-        label='To:'
-        value={parseInt(timeForm.values.endTime)}
-        onChange={(v) => timeForm.setValues({ ...timeForm.values, endTime: v.toString() })}
-      />
-      <Button type='submit' className='bg-blue-600 hover:bg-blue-800' disabled={ecuState !== 'Ready'} leftIcon={<Activity />}>
+    <Group className='gap-y-2 gap-x-2 items-end'>
+      <DateTimeInput label='From:' value={startTime.getTime()} onChange={(n) => setStartTime(new Date(n))} />
+      <DateTimeInput label='To:' value={endTime.getTime()} onChange={(n) => setEndTime(new Date(n))} />
+      <Button
+        type='submit'
+        className='bg-blue-600 hover:bg-blue-800'
+        // disabled={ecuState !== 'Ready'}
+        leftIcon={<Activity />}
+        onClick={() => submitEnergyRequest()}
+      >
         <Text>Get Energy</Text>
       </Button>
-    </form>
+    </Group>
   );
 };
 

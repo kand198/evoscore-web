@@ -13,7 +13,6 @@ const DateTimeInput = (props: DateTimeInputProps) => {
   const { required, label, placeHolder, value, onChange } = props;
 
   const filteredValue = value && value > 0 ? value : 0;
-
   const time = new Date(filteredValue);
 
   const compileDateChange = (v: Date) => {
@@ -36,8 +35,17 @@ const DateTimeInput = (props: DateTimeInputProps) => {
   return (
     <Input.Wrapper required={required} label={label} placeholder={placeHolder}>
       <Group className='flex-nowrap max-w-sm gap-x-1 overflow-x-hidden'>
-        <DatePicker placeholder='Pick date' label='Date' value={time} onChange={onDateChange} className='grow' required dropdownType='modal' />
-        <TimeInput placeholder='Pick time' format='12' label='Time' value={time} onChange={onTimeChange} className='shrink min-w-0' withSeconds required />
+        <DatePicker placeholder='Pick date' label='Date' defaultValue={time} onChange={onDateChange} className='grow' required dropdownType='modal' />
+        <TimeInput
+          placeholder='Pick time'
+          format='12'
+          label='Time'
+          defaultValue={time}
+          onChange={onTimeChange}
+          className='shrink min-w-0'
+          withSeconds
+          required
+        />
       </Group>
     </Input.Wrapper>
   );

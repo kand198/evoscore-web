@@ -6,7 +6,7 @@ export const getFirstTime = (t: Team): number | undefined => t.events.endurance.
 export const getLastTime = (t: Team): number | undefined => (getFirstTime(t) !== undefined ? getFirstTime(t) + getTotalTime(t) : undefined);
 export const getTimeRange = (t: Team): [startTime: number, endTime: number] => {
   const startTime = getFirstTime(t) || Date.now();
-  const endTime = t.events.endurance.running ? Date.now() : getLastTime(t) || Date.now();
+  const endTime = getLastTime(t) || Date.now();
   return [startTime, endTime];
 };
 export const getLastTimeIndex = (t: Team): number => t.events.endurance.lapTimes.length;
