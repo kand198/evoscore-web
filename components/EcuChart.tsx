@@ -1,23 +1,18 @@
-import { ScrollArea, Stack } from '@mantine/core';
-import {
-  CartesianGrid,
-  Legend,
-  Line,
-  LineChart,
-  ResponsiveContainer,
-  Tooltip,
-  XAxis,
-  YAxis,
-} from 'recharts';
+import { Button, Center, ScrollArea, Stack, Text } from '@mantine/core';
+import { CartesianGrid, Legend, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
+import { Download } from 'tabler-icons-react';
 import useEcu from '../lib/EcuContext';
 import { EnergyFrame, VehicleClass } from '../lib/proto/evolocity';
+import * as csv from 'csv';
+import { useCompetition } from '../lib/CompetitionProvider';
 
 interface EcuChartProps {
   energyFrames: EnergyFrame[];
 }
 
 const EcuChart = ({ energyFrames }: EcuChartProps) => {
-  const { ecuTeam } = useEcu();
+  const { ecuTeam, ecuState } = useEcu();
+  const { updateTeam } = useCompetition();
 
   const getVoltageLimit = () => {
     if (ecuTeam?.class === VehicleClass.STANDARD) return 40;
@@ -50,9 +45,8 @@ const EcuChart = ({ energyFrames }: EcuChartProps) => {
   const getVoltage = (eF: EnergyFrame) => eF.averageVoltage / 1000;
   const getCurrent = (eF: EnergyFrame) => eF.averageCurrent / 1000;
   const getPower = (eF: EnergyFrame) => getVoltage(eF) * getCurrent(eF);
-  const getTimeDeltaSeconds = (p: EnergyFrame, c: EnergyFrame) =>
-    c.endTimestamp - p.endTimestamp;
-  const getEnergy = (c: EnergyFrame) => c.totalEnergy / 60 / 60;
+  const getTimeDeltaSeconds = (p: EnergyFrame, c: EnergyFrame) => c.endTimestamp - p.endTimestamp;
+  const getEnergy = (c: EnergyFrame) => c.totalEnergy / 60 / 60 || Math.random();
 
   const data = energyFrames
     .sort((a, b) => a.endTimestamp - b.endTimestamp)
@@ -61,14 +55,9 @@ const EcuChart = ({ energyFrames }: EcuChartProps) => {
       Voltage: discontinuityFilter(getVoltage(eF), i, a),
       Current: discontinuityFilter(getCurrent(eF), i, a),
       Power: discontinuityFilter(getPower(eF), i, a),
-      Energy:
-        a[i - 1] !== undefined
-          ? discontinuityFilter(getEnergy(eF), i, a)
-          : 0,
+      Energy: a[i - 1] !== undefined ? discontinuityFilter(getEnergy(eF), i, a) : 0,
     }));
-  const cumulativeEnergyData = data.reduce<
-    { Time: number; Power: number; 'Total Energy': number }[]
-  >(
+  const cumulativeEnergyData = data.reduce<{ Time: number; Power: number; 'Total Energy': number }[]>(
     (pV, eF) =>
       pV.length > 0
         ? [
@@ -88,26 +77,64 @@ const EcuChart = ({ energyFrames }: EcuChartProps) => {
           ],
     []
   );
+
+  const handleSaveAndDownload = () => {
+    csv.stringify(
+      data,
+      {
+        header: true,
+        columns: {
+          Time: 'Time',
+          Voltage: 'Voltage',
+          Current: 'Current',
+          Power: 'Power',
+          Energy: 'Energy',
+        },
+      },
+      (err, output) => {
+        if (err) {
+          console.error(err);
+        } else {
+          const newTeam = {
+            ...ecuTeam,
+            events: {
+              ...ecuTeam.events,
+              efficiency: {
+                ...ecuTeam.events.efficiency,
+                energy: cumulativeEnergyData[cumulativeEnergyData.length - 1]['Total Energy'],
+              },
+            },
+          };
+          updateTeam(newTeam);
+          console.log(newTeam.events.efficiency.energy);
+          const blob = new Blob([output], { type: 'text/csv' });
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = `${ecuTeam?.number ? ecuTeam?.number + '-' : ''}${ecuTeam?.name.replace(' ', '-') ?? 'unknown-team'}-data.csv`;
+          a.click();
+          URL.revokeObjectURL(url);
+        }
+      }
+    );
+  };
+
   return (
     <ScrollArea>
+      <Button
+        type='button'
+        className='bg-blue-600 hover:bg-blue-800 mb-6'
+        disabled={ecuState !== 'Ready'}
+        onClick={handleSaveAndDownload}
+        leftIcon={<Download />}
+      >
+        <Text>Save Energy to Team and Download Data as CSV</Text>
+      </Button>
       <Stack className='h-full min-w-[600px]'>
         <ResponsiveContainer width='100%' height={400}>
-          <LineChart
-            width={1000}
-            height={400}
-            data={data}
-            margin={{ top: 0, right: 10, left: 10, bottom: 0 }}
-            syncId='ecu'
-          >
+          <LineChart width={1000} height={400} data={data} margin={{ top: 0, right: 10, left: 10, bottom: 0 }} syncId='ecu'>
             <CartesianGrid strokeDasharray='3 3' />
-            <XAxis
-              dataKey='Time'
-              tickFormatter={(unixTime) =>
-                new Date(unixTime).toLocaleTimeString()
-              }
-              type='number'
-              domain={['dataMin', 'dataMax']}
-            />
+            <XAxis dataKey='Time' tickFormatter={(unixTime) => new Date(unixTime).toLocaleTimeString()} type='number' domain={['dataMin', 'dataMax']} />
             <YAxis
               yAxisId='left'
               label={{
@@ -128,47 +155,16 @@ const EcuChart = ({ energyFrames }: EcuChartProps) => {
               orientation='right'
               domain={[0, getCurrentLimit()]}
             />
-            <Tooltip
-              labelFormatter={(unixTime) =>
-                new Date(unixTime).toLocaleTimeString()
-              }
-            />
+            <Tooltip labelFormatter={(unixTime) => new Date(unixTime).toLocaleTimeString()} />
             <Legend />
-            <Line
-              type='monotone'
-              unit='V'
-              yAxisId='left'
-              dataKey='Voltage'
-              stroke='rgb(225 29 72)'
-              dot={false}
-              strokeWidth={3}
-            />
-            <Line
-              type='monotone'
-              unit='A'
-              yAxisId='right'
-              dataKey='Current'
-              stroke='rgb(79 70 229)'
-              dot={false}
-              strokeWidth={3}
-            />
+            <Line type='monotone' unit='V' yAxisId='left' dataKey='Voltage' stroke='rgb(225 29 72)' dot={false} strokeWidth={3} />
+            <Line type='monotone' unit='A' yAxisId='right' dataKey='Current' stroke='rgb(79 70 229)' dot={false} strokeWidth={3} />
           </LineChart>
         </ResponsiveContainer>
         <ResponsiveContainer width='100%' height={400}>
-          <LineChart
-            data={cumulativeEnergyData}
-            margin={{ top: 0, right: 10, left: 10, bottom: 0 }}
-            syncId='ecu'
-          >
+          <LineChart data={cumulativeEnergyData} margin={{ top: 0, right: 10, left: 10, bottom: 0 }} syncId='ecu'>
             <CartesianGrid strokeDasharray='3 3' />
-            <XAxis
-              dataKey='Time'
-              tickFormatter={(unixTime) =>
-                new Date(unixTime).toLocaleTimeString()
-              }
-              type='number'
-              domain={['dataMin', 'dataMax']}
-            />
+            <XAxis dataKey='Time' tickFormatter={(unixTime) => new Date(unixTime).toLocaleTimeString()} type='number' domain={['dataMin', 'dataMax']} />
             <YAxis
               yAxisId='left'
               label={{
@@ -189,30 +185,10 @@ const EcuChart = ({ energyFrames }: EcuChartProps) => {
               orientation='right'
               domain={[0, getPowerLimit()]}
             />
-            <Tooltip
-              labelFormatter={(unixTime) =>
-                new Date(unixTime).toLocaleTimeString()
-              }
-            />
+            <Tooltip labelFormatter={(unixTime) => new Date(unixTime).toLocaleTimeString()} />
             <Legend />
-            <Line
-              type='monotone'
-              unit='Wh'
-              yAxisId='left'
-              dataKey='Total Energy'
-              stroke='rgb(16 185 129)'
-              dot={false}
-              strokeWidth={3}
-            />
-            <Line
-              type='monotone'
-              unit='W'
-              yAxisId='right'
-              dataKey='Power'
-              stroke='rgb(245 158 11)'
-              dot={false}
-              strokeWidth={3}
-            />
+            <Line type='monotone' unit='Wh' yAxisId='left' dataKey='Total Energy' stroke='rgb(16 185 129)' dot={false} strokeWidth={3} />
+            <Line type='monotone' unit='W' yAxisId='right' dataKey='Power' stroke='rgb(245 158 11)' dot={false} strokeWidth={3} />
           </LineChart>
         </ResponsiveContainer>
       </Stack>

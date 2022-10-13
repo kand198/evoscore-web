@@ -17,9 +17,7 @@ const AppNotifications = () => {
   };
 
   const getNotificationTitle = (notification: INotification) =>
-    notification.title ||
-    (notification!.type.at(0)?.toUpperCase() || '') +
-      notification!.type.slice(1);
+    notification.title || (notification!.type.at(0)?.toUpperCase() || '') + notification!.type.slice(1);
 
   const getNotificationColour = (notification: INotification) => {
     switch (notification?.type) {
@@ -35,11 +33,7 @@ const AppNotifications = () => {
   return (
     <ScrollArea
       type='hover'
-      className={
-        (notifications || []).length > 0
-          ? '!fixed right-0 top-0 mt-4 mb-4 pb-8 ml-8 mr-4 pr-4 max-w-md h-full'
-          : 'hidden'
-      }
+      className={(notifications || []).length > 0 ? '!fixed right-0 top-0 mt-4 mb-4 pb-8 ml-8 mr-4 pr-4 max-w-md h-full' : 'hidden'}
       style={{ zIndex: 110 }}
     >
       <Stack className='h-full' style={{ zIndex: 110 }}>

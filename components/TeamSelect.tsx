@@ -1,5 +1,5 @@
 import { Button, Select, SelectItem } from '@mantine/core';
-import { useForm } from '@mantine/hooks';
+import { useForm } from '@mantine/form';
 import { useEffect } from 'react';
 import { useCompetition } from '../lib/CompetitionProvider';
 import useEcu from '../lib/EcuContext';
@@ -25,10 +25,7 @@ const TeamSelect = () => {
   }, [ecuTeam]);
 
   return (
-    <form
-      onSubmit={teamForm.onSubmit((values) => submitTeamForm(values))}
-      className='w-full flex flex-row gap-x-2 items-end'
-    >
+    <form onSubmit={teamForm.onSubmit((values) => submitTeamForm(values))} className='w-full flex flex-row gap-x-2 items-end'>
       <Select
         label='Select the Team for this ECU'
         placeholder='Pick one'
@@ -39,11 +36,7 @@ const TeamSelect = () => {
         disabled={ecuState !== 'Ready'}
         {...teamForm.getInputProps('id')}
       />
-      <Button
-        type='submit'
-        className='bg-blue-600 hover:bg-blue-800 max-w-sm'
-        disabled={ecuState !== 'Ready'}
-      >
+      <Button type='submit' className='bg-blue-600 hover:bg-blue-800 max-w-sm' disabled={ecuState !== 'Ready'}>
         Submit
       </Button>
     </form>

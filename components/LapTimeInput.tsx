@@ -1,4 +1,4 @@
-import { InputWrapper, Input, NumberInput, Group } from '@mantine/core';
+import { NumberInput, Group, Input } from '@mantine/core';
 
 export interface LapTimeInputProps {
   required?: boolean;
@@ -20,39 +20,23 @@ const LapTimeInput = (props: LapTimeInputProps) => {
   const onMillisChange = (n) => onChange(new Date(time).setMilliseconds(n));
 
   return (
-    <InputWrapper required={required} label={label} placeholder={placeHolder}>
+    <Input.Wrapper label={label} required={required} placeholder={placeHolder}>
       <Group className='flex-nowrap'>
-        <NumberInput
-          required={required}
-          placeholder='mins'
-          value={time.getMinutes()}
-          onChange={onMinsChange}
-          max={59}
-          min={0}
-          className='flex-auto'
-        />
+        <NumberInput required={required} placeholder='mins' value={time.getMinutes()} onChange={onMinsChange} max={59} min={0} className='flex-auto' />
         :
-        <NumberInput
-          required={required}
-          placeholder='secs'
-          value={time.getSeconds()}
-          onChange={onSecsChange}
-          max={59}
-          min={0}
-          className='flex-auto'
-        />
+        <NumberInput required={required} placeholder='secs' value={time.getSeconds()} onChange={onSecsChange} max={59} min={0} className='flex-auto' />
         .
         <NumberInput
           required={required}
           placeholder='millis'
           value={time.getMilliseconds()}
           onChange={onMillisChange}
-          max={59}
+          max={999}
           min={0}
           className='flex-auto'
         />
       </Group>
-    </InputWrapper>
+    </Input.Wrapper>
   );
 };
 

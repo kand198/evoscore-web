@@ -1,48 +1,50 @@
-import {
-  createContext,
-  PropsWithChildren,
-  useContext,
-  useEffect,
-  useState,
-} from 'react';
+import { createContext, PropsWithChildren, useContext, useEffect, useState } from 'react';
 import Team, { emptyTeam } from './TeamInterface';
 
-export interface CompetitionContextValue {
+export type CompetitionMetadata = {
   name: string;
-  setName: (string) => void;
+  region?: string;
+  scorePerson?: string;
+  date?: number;
+  lastEdited?: number;
+};
+
+export interface CompetitionContextValue {
+  metadata: CompetitionMetadata;
+  setMetadata: (CompetitionMetadata) => void;
   laps: number;
   setLaps: (number) => void;
   teams: Team[];
   addTeam: () => Team;
   removeTeam: (Team) => void;
-  updateTeam: (Team) => void;
+  updateTeam: (Team: Team) => void;
+  setTeams: (Teams) => void;
 }
 
 export const CompetitionContext = createContext<CompetitionContextValue>({
-  name: '',
-  setName: () => {},
+  metadata: { name: '' },
+  setMetadata: () => {},
   laps: 0,
   setLaps: () => {},
   teams: [],
   addTeam: () => emptyTeam(),
   removeTeam: () => {},
   updateTeam: () => {},
+  setTeams: () => {},
 });
 
 export const useCompetition = () => useContext(CompetitionContext);
 
 interface CompetitionContextProps {}
 
-const CompetitionProvider = ({
-  children,
-}: PropsWithChildren<CompetitionContextProps>) => {
-  const [name, setName] = useState<string>('');
+const CompetitionProvider = ({ children }: PropsWithChildren<CompetitionContextProps>) => {
+  const [metadata, setMetadata] = useState<CompetitionMetadata>({ name: '' });
   const [laps, setLaps] = useState<number>(0);
   const [teams, setTeams] = useState<Team[] | undefined>(undefined);
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
-      setName(localStorage.getItem('competitionName') || '');
+      setMetadata(JSON.parse(localStorage.getItem('competitionMetadata')) || { name: '' });
       setLaps(parseInt(localStorage.getItem('competitionLaps') || '1'));
       const localTeams = localStorage.getItem('competitionTeams');
       if (localTeams) setTeams(JSON.parse(localTeams));
@@ -51,16 +53,13 @@ const CompetitionProvider = ({
   }, []);
 
   useEffect(() => {
-    if (typeof window !== 'undefined' && name !== '')
-      localStorage.setItem('competitionName', name);
-  }, [name]);
+    if (typeof window !== 'undefined' && metadata.name !== '') localStorage.setItem('competitionMetadata', JSON.stringify(metadata));
+  }, [metadata]);
   useEffect(() => {
-    if (typeof window !== 'undefined' && laps !== 0)
-      localStorage.setItem('competitionLaps', laps.toString());
+    if (typeof window !== 'undefined' && laps !== 0) localStorage.setItem('competitionLaps', laps.toString());
   }, [laps]);
   useEffect(() => {
-    if (typeof window !== 'undefined' && teams)
-      localStorage.setItem('competitionTeams', JSON.stringify(teams));
+    if (typeof window !== 'undefined' && teams) localStorage.setItem('competitionTeams', JSON.stringify(teams));
   }, [teams]);
 
   const getTeamIds = () => teams?.map((t) => t.id);
@@ -82,20 +81,21 @@ const CompetitionProvider = ({
     if (!getTeamIds().includes(team.id)) {
       return;
     }
-    setTeams(teams?.map((t) => (t.id === team.id ? team : t)));
+    setTeams((ts) => ts?.map((t) => (t.id === team.id ? team : t)));
   };
 
   return (
     <CompetitionContext.Provider
       value={{
-        name,
-        setName,
+        metadata,
+        setMetadata,
         laps,
         setLaps,
         teams,
         addTeam,
         removeTeam,
         updateTeam,
+        setTeams,
       }}
     >
       {children}

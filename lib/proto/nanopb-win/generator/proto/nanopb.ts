@@ -1,9 +1,5 @@
 /* eslint-disable */
-import {
-  FieldDescriptorProto_Type,
-  fieldDescriptorProto_TypeFromJSON,
-  fieldDescriptorProto_TypeToJSON,
-} from '../../../../google/protobuf/descriptor';
+import { FieldDescriptorProto_Type, fieldDescriptorProto_TypeFromJSON, fieldDescriptorProto_TypeToJSON } from '../../../../google/protobuf/descriptor';
 import * as _m0 from 'protobufjs/minimal';
 
 export const protobufPackage = '';
@@ -366,10 +362,7 @@ function createBaseNanoPBOptions(): NanoPBOptions {
 }
 
 export const NanoPBOptions = {
-  encode(
-    message: NanoPBOptions,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
+  encode(message: NanoPBOptions, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
     if (message.maxSize !== 0) {
       writer.uint32(8).int32(message.maxSize);
     }
@@ -564,98 +557,55 @@ export const NanoPBOptions = {
       intSize: isSet(object.intSize) ? intSizeFromJSON(object.intSize) : 0,
       type: isSet(object.type) ? fieldTypeFromJSON(object.type) : 0,
       longNames: isSet(object.longNames) ? Boolean(object.longNames) : false,
-      packedStruct: isSet(object.packedStruct)
-        ? Boolean(object.packedStruct)
-        : false,
+      packedStruct: isSet(object.packedStruct) ? Boolean(object.packedStruct) : false,
       packedEnum: isSet(object.packedEnum) ? Boolean(object.packedEnum) : false,
-      skipMessage: isSet(object.skipMessage)
-        ? Boolean(object.skipMessage)
-        : false,
+      skipMessage: isSet(object.skipMessage) ? Boolean(object.skipMessage) : false,
       noUnions: isSet(object.noUnions) ? Boolean(object.noUnions) : false,
       msgid: isSet(object.msgid) ? Number(object.msgid) : 0,
-      anonymousOneof: isSet(object.anonymousOneof)
-        ? Boolean(object.anonymousOneof)
-        : false,
+      anonymousOneof: isSet(object.anonymousOneof) ? Boolean(object.anonymousOneof) : false,
       proto3: isSet(object.proto3) ? Boolean(object.proto3) : false,
-      proto3SingularMsgs: isSet(object.proto3SingularMsgs)
-        ? Boolean(object.proto3SingularMsgs)
-        : false,
-      enumToString: isSet(object.enumToString)
-        ? Boolean(object.enumToString)
-        : false,
-      fixedLength: isSet(object.fixedLength)
-        ? Boolean(object.fixedLength)
-        : false,
+      proto3SingularMsgs: isSet(object.proto3SingularMsgs) ? Boolean(object.proto3SingularMsgs) : false,
+      enumToString: isSet(object.enumToString) ? Boolean(object.enumToString) : false,
+      fixedLength: isSet(object.fixedLength) ? Boolean(object.fixedLength) : false,
       fixedCount: isSet(object.fixedCount) ? Boolean(object.fixedCount) : false,
-      submsgCallback: isSet(object.submsgCallback)
-        ? Boolean(object.submsgCallback)
-        : false,
-      mangleNames: isSet(object.mangleNames)
-        ? typenameManglingFromJSON(object.mangleNames)
-        : 0,
-      callbackDatatype: isSet(object.callbackDatatype)
-        ? String(object.callbackDatatype)
-        : '',
-      callbackFunction: isSet(object.callbackFunction)
-        ? String(object.callbackFunction)
-        : '',
-      descriptorsize: isSet(object.descriptorsize)
-        ? descriptorSizeFromJSON(object.descriptorsize)
-        : 0,
+      submsgCallback: isSet(object.submsgCallback) ? Boolean(object.submsgCallback) : false,
+      mangleNames: isSet(object.mangleNames) ? typenameManglingFromJSON(object.mangleNames) : 0,
+      callbackDatatype: isSet(object.callbackDatatype) ? String(object.callbackDatatype) : '',
+      callbackFunction: isSet(object.callbackFunction) ? String(object.callbackFunction) : '',
+      descriptorsize: isSet(object.descriptorsize) ? descriptorSizeFromJSON(object.descriptorsize) : 0,
       defaultHas: isSet(object.defaultHas) ? Boolean(object.defaultHas) : false,
-      include: Array.isArray(object?.include)
-        ? object.include.map((e: any) => String(e))
-        : [],
-      exclude: Array.isArray(object?.exclude)
-        ? object.exclude.map((e: any) => String(e))
-        : [],
+      include: Array.isArray(object?.include) ? object.include.map((e: any) => String(e)) : [],
+      exclude: Array.isArray(object?.exclude) ? object.exclude.map((e: any) => String(e)) : [],
       package: isSet(object.package) ? String(object.package) : '',
-      typeOverride: isSet(object.typeOverride)
-        ? fieldDescriptorProto_TypeFromJSON(object.typeOverride)
-        : 1,
+      typeOverride: isSet(object.typeOverride) ? fieldDescriptorProto_TypeFromJSON(object.typeOverride) : 1,
       sortByTag: isSet(object.sortByTag) ? Boolean(object.sortByTag) : false,
     };
   },
 
   toJSON(message: NanoPBOptions): unknown {
     const obj: any = {};
-    message.maxSize !== undefined &&
-      (obj.maxSize = Math.round(message.maxSize));
-    message.maxLength !== undefined &&
-      (obj.maxLength = Math.round(message.maxLength));
-    message.maxCount !== undefined &&
-      (obj.maxCount = Math.round(message.maxCount));
-    message.intSize !== undefined &&
-      (obj.intSize = intSizeToJSON(message.intSize));
+    message.maxSize !== undefined && (obj.maxSize = Math.round(message.maxSize));
+    message.maxLength !== undefined && (obj.maxLength = Math.round(message.maxLength));
+    message.maxCount !== undefined && (obj.maxCount = Math.round(message.maxCount));
+    message.intSize !== undefined && (obj.intSize = intSizeToJSON(message.intSize));
     message.type !== undefined && (obj.type = fieldTypeToJSON(message.type));
     message.longNames !== undefined && (obj.longNames = message.longNames);
-    message.packedStruct !== undefined &&
-      (obj.packedStruct = message.packedStruct);
+    message.packedStruct !== undefined && (obj.packedStruct = message.packedStruct);
     message.packedEnum !== undefined && (obj.packedEnum = message.packedEnum);
-    message.skipMessage !== undefined &&
-      (obj.skipMessage = message.skipMessage);
+    message.skipMessage !== undefined && (obj.skipMessage = message.skipMessage);
     message.noUnions !== undefined && (obj.noUnions = message.noUnions);
     message.msgid !== undefined && (obj.msgid = Math.round(message.msgid));
-    message.anonymousOneof !== undefined &&
-      (obj.anonymousOneof = message.anonymousOneof);
+    message.anonymousOneof !== undefined && (obj.anonymousOneof = message.anonymousOneof);
     message.proto3 !== undefined && (obj.proto3 = message.proto3);
-    message.proto3SingularMsgs !== undefined &&
-      (obj.proto3SingularMsgs = message.proto3SingularMsgs);
-    message.enumToString !== undefined &&
-      (obj.enumToString = message.enumToString);
-    message.fixedLength !== undefined &&
-      (obj.fixedLength = message.fixedLength);
+    message.proto3SingularMsgs !== undefined && (obj.proto3SingularMsgs = message.proto3SingularMsgs);
+    message.enumToString !== undefined && (obj.enumToString = message.enumToString);
+    message.fixedLength !== undefined && (obj.fixedLength = message.fixedLength);
     message.fixedCount !== undefined && (obj.fixedCount = message.fixedCount);
-    message.submsgCallback !== undefined &&
-      (obj.submsgCallback = message.submsgCallback);
-    message.mangleNames !== undefined &&
-      (obj.mangleNames = typenameManglingToJSON(message.mangleNames));
-    message.callbackDatatype !== undefined &&
-      (obj.callbackDatatype = message.callbackDatatype);
-    message.callbackFunction !== undefined &&
-      (obj.callbackFunction = message.callbackFunction);
-    message.descriptorsize !== undefined &&
-      (obj.descriptorsize = descriptorSizeToJSON(message.descriptorsize));
+    message.submsgCallback !== undefined && (obj.submsgCallback = message.submsgCallback);
+    message.mangleNames !== undefined && (obj.mangleNames = typenameManglingToJSON(message.mangleNames));
+    message.callbackDatatype !== undefined && (obj.callbackDatatype = message.callbackDatatype);
+    message.callbackFunction !== undefined && (obj.callbackFunction = message.callbackFunction);
+    message.descriptorsize !== undefined && (obj.descriptorsize = descriptorSizeToJSON(message.descriptorsize));
     message.defaultHas !== undefined && (obj.defaultHas = message.defaultHas);
     if (message.include) {
       obj.include = message.include.map((e) => e);
@@ -668,17 +618,12 @@ export const NanoPBOptions = {
       obj.exclude = [];
     }
     message.package !== undefined && (obj.package = message.package);
-    message.typeOverride !== undefined &&
-      (obj.typeOverride = fieldDescriptorProto_TypeToJSON(
-        message.typeOverride
-      ));
+    message.typeOverride !== undefined && (obj.typeOverride = fieldDescriptorProto_TypeToJSON(message.typeOverride));
     message.sortByTag !== undefined && (obj.sortByTag = message.sortByTag);
     return obj;
   },
 
-  fromPartial<I extends Exact<DeepPartial<NanoPBOptions>, I>>(
-    object: I
-  ): NanoPBOptions {
+  fromPartial<I extends Exact<DeepPartial<NanoPBOptions>, I>>(object: I): NanoPBOptions {
     const message = createBaseNanoPBOptions();
     message.maxSize = object.maxSize ?? 0;
     message.maxLength = object.maxLength ?? 0;
@@ -712,14 +657,7 @@ export const NanoPBOptions = {
   },
 };
 
-type Builtin =
-  | Date
-  | Function
-  | Uint8Array
-  | string
-  | number
-  | boolean
-  | undefined;
+type Builtin = Date | Function | Uint8Array | string | number | boolean | undefined;
 
 export type DeepPartial<T> = T extends Builtin
   ? T
@@ -732,12 +670,7 @@ export type DeepPartial<T> = T extends Builtin
   : Partial<T>;
 
 type KeysOfUnion<T> = T extends T ? keyof T : never;
-export type Exact<P, I extends P> = P extends Builtin
-  ? P
-  : P & { [K in keyof P]: Exact<P[K], I[K]> } & Record<
-        Exclude<keyof I, KeysOfUnion<P>>,
-        never
-      >;
+export type Exact<P, I extends P> = P extends Builtin ? P : P & { [K in keyof P]: Exact<P[K], I[K]> } & Record<Exclude<keyof I, KeysOfUnion<P>>, never>;
 
 function isSet(value: any): boolean {
   return value !== null && value !== undefined;

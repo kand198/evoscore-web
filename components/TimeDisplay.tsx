@@ -11,23 +11,13 @@ const TimeDisplay = (props: TimeDisplayProps) => {
   const time = new Date(filteredValue);
 
   const constructTimeString = (vals: number[]) => {
-    const timeString = vals.map((n) =>
-      (filteredValue > 0 ? String(n) : '--').padStart(2, '0')
-    );
+    const timeString = vals.map((n) => (filteredValue > 0 ? String(n) : '--').padStart(2, '0'));
     timeString.splice(1, 0, ':');
     timeString.splice(3, 0, ':');
     return timeString;
   };
 
-  return (
-    <Text>
-      {constructTimeString([
-        time.getHours(),
-        time.getMinutes(),
-        time.getSeconds(),
-      ])}
-    </Text>
-  );
+  return <Text>{constructTimeString([time.getHours(), time.getMinutes(), time.getSeconds()])}</Text>;
 };
 
 export default TimeDisplay;

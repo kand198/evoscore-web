@@ -1,10 +1,10 @@
-import { Anchor, Breadcrumbs, Group, MultiSelect, Select, Stack, Title } from '@mantine/core';
+import { Anchor, Breadcrumbs, Group, MultiSelect, Select, Stack, Text, Title } from '@mantine/core';
 import Link from 'next/link';
 import { useState } from 'react';
-import EfficiencyTable from '../../components/EfficiencyTable';
+import GymkhanaTable from '../../components/GymkhanaTable';
 import { defaultFilters, Filter } from '../../lib/Filters';
 
-const Efficiency = () => {
+const Gymkhana = () => {
   const [sort, setSort] = useState('number');
   const [filters, setFilters] = useState<Filter[]>(defaultFilters);
 
@@ -14,18 +14,17 @@ const Efficiency = () => {
         <Link passHref href='/events' key={0}>
           <Anchor>Events</Anchor>
         </Link>
-        <Link passHref href='/events/efficiency' key={1}>
-          <Anchor>Efficiency</Anchor>
+        <Link passHref href='' key={1}>
+          <Anchor>Gymkhana</Anchor>
         </Link>
       </Breadcrumbs>
       <Group className='items-center'>
-        <Title>Efficiency</Title>
+        <Title>Gymkhana</Title>
         <Select
           label='Sort By'
           data={[
             { value: 'number', label: 'Race Number' },
-            { value: 'laps', label: 'Number of Laps' },
-            { value: 'energy', label: 'Energy' },
+            { value: 'time', label: 'Quickest Time' },
           ]}
           defaultValue='number'
           value={sort}
@@ -40,10 +39,11 @@ const Efficiency = () => {
           clearButtonLabel='Clear selection'
           clearable
         />
+        <Text italic>Note: Times displayed include deductions and bonuses</Text>
       </Group>
-      <EfficiencyTable sortBy={sort} filters={filters} />
+      <GymkhanaTable sortBy={sort} filters={filters} />
     </Stack>
   );
 };
 
-export default Efficiency;
+export default Gymkhana;

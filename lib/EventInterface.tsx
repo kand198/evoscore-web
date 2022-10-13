@@ -1,35 +1,36 @@
 export default interface EventInterface {
-  drag: number;
+  drag: number[];
   gymkhana: {
-    times: number[];
-    running: boolean;
-    cones: number;
-    bonus: number;
-    loss: number;
+    runs: {
+      time: number;
+      cones: number;
+      bonus: number;
+      loss: number;
+    }[];
   };
-  efficiency: {
+  endurance: {
     startTime: number;
     lapTimes: number[];
-    running: boolean;
+  };
+  efficiency: {
     energy: number;
   };
+  technicalReport: number;
 }
 
-export const emptyEvents = () => {
+export const emptyEvents = (): EventInterface => {
   return {
-    drag: 0,
+    drag: [],
     gymkhana: {
-      times: [],
-      running: false,
-      cones: 0,
-      bonus: 0,
-      loss: 0,
+      runs: [],
     },
-    efficiency: {
+    endurance: {
       startTime: 0,
       lapTimes: [],
-      running: false,
+    },
+    efficiency: {
       energy: 0,
     },
+    technicalReport: 0,
   };
 };

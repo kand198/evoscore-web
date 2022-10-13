@@ -10,12 +10,13 @@
     "prepare": "husky install"
   },
   "dependencies": {
-    "@mantine/core": "^4.2.12",
-    "@mantine/dates": "^4.2.12",
-    "@mantine/form": "^4.2.11",
-    "@mantine/hooks": "^4.2.12",
-    "@mantine/next": "^4.2.10",
+    "@mantine/core": "^5.2.3",
+    "@mantine/dates": "^5.2.3",
+    "@mantine/form": "^5.2.3",
+    "@mantine/hooks": "^5.2.3",
+    "@mantine/next": "^5.2.3",
     "@types/w3c-web-serial": "^1.0.2",
+    "csv": "^6.2.0",
     "dayjs": "^1.11.4",
     "next": "12.1.4",
     "protobufjs": "^6.11.3",
