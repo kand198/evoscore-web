@@ -15,8 +15,8 @@ const EnergyFetch = () => {
     const startTimestamp = Math.floor(startTime.getTime() / 1000);
     const endTimestamp = Math.floor(endTime.getTime() / 1000);
     console.log(startTimestamp, endTimestamp);
-    // clearEnergyFrames();
-    // getEnergyFrames([startTimestamp, endTimestamp]);
+    clearEnergyFrames();
+    getEnergyFrames([startTimestamp, endTimestamp]);
   };
 
   useEffect(() => {
@@ -35,7 +35,7 @@ const EnergyFetch = () => {
       <Button
         type='submit'
         className='bg-blue-600 hover:bg-blue-800'
-        // disabled={ecuState !== 'Ready'}
+        disabled={ecuState !== 'Ready'}
         leftIcon={<Activity />}
         onClick={() => submitEnergyRequest()}
       >

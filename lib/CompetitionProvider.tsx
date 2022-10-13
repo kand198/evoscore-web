@@ -17,7 +17,7 @@ export interface CompetitionContextValue {
   teams: Team[];
   addTeam: () => Team;
   removeTeam: (Team) => void;
-  updateTeam: (Team) => void;
+  updateTeam: (Team: Team) => void;
   setTeams: (Teams) => void;
 }
 
@@ -81,7 +81,7 @@ const CompetitionProvider = ({ children }: PropsWithChildren<CompetitionContextP
     if (!getTeamIds().includes(team.id)) {
       return;
     }
-    setTeams(teams?.map((t) => (t.id === team.id ? team : t)));
+    setTeams((ts) => ts?.map((t) => (t.id === team.id ? team : t)));
   };
 
   return (

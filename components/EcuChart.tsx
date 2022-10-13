@@ -1,9 +1,10 @@
-import { Button, ScrollArea, Stack, Text } from '@mantine/core';
+import { Button, Center, ScrollArea, Stack, Text } from '@mantine/core';
 import { CartesianGrid, Legend, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 import { Download } from 'tabler-icons-react';
 import useEcu from '../lib/EcuContext';
 import { EnergyFrame, VehicleClass } from '../lib/proto/evolocity';
 import * as csv from 'csv';
+import { useCompetition } from '../lib/CompetitionProvider';
 
 interface EcuChartProps {
   energyFrames: EnergyFrame[];
@@ -11,6 +12,7 @@ interface EcuChartProps {
 
 const EcuChart = ({ energyFrames }: EcuChartProps) => {
   const { ecuTeam, ecuState } = useEcu();
+  const { updateTeam } = useCompetition();
 
   const getVoltageLimit = () => {
     if (ecuTeam?.class === VehicleClass.STANDARD) return 40;
@@ -44,7 +46,7 @@ const EcuChart = ({ energyFrames }: EcuChartProps) => {
   const getCurrent = (eF: EnergyFrame) => eF.averageCurrent / 1000;
   const getPower = (eF: EnergyFrame) => getVoltage(eF) * getCurrent(eF);
   const getTimeDeltaSeconds = (p: EnergyFrame, c: EnergyFrame) => c.endTimestamp - p.endTimestamp;
-  const getEnergy = (c: EnergyFrame) => c.totalEnergy / 60 / 60;
+  const getEnergy = (c: EnergyFrame) => c.totalEnergy / 60 / 60 || Math.random();
 
   const data = energyFrames
     .sort((a, b) => a.endTimestamp - b.endTimestamp)
@@ -76,7 +78,7 @@ const EcuChart = ({ energyFrames }: EcuChartProps) => {
     []
   );
 
-  const handleDownload = () => {
+  const handleSaveAndDownload = () => {
     csv.stringify(
       data,
       {
@@ -93,6 +95,18 @@ const EcuChart = ({ energyFrames }: EcuChartProps) => {
         if (err) {
           console.error(err);
         } else {
+          const newTeam = {
+            ...ecuTeam,
+            events: {
+              ...ecuTeam.events,
+              efficiency: {
+                ...ecuTeam.events.efficiency,
+                energy: cumulativeEnergyData[cumulativeEnergyData.length - 1]['Total Energy'],
+              },
+            },
+          };
+          updateTeam(newTeam);
+          console.log(newTeam.events.efficiency.energy);
           const blob = new Blob([output], { type: 'text/csv' });
           const url = URL.createObjectURL(blob);
           const a = document.createElement('a');
@@ -107,6 +121,15 @@ const EcuChart = ({ energyFrames }: EcuChartProps) => {
 
   return (
     <ScrollArea>
+      <Button
+        type='button'
+        className='bg-blue-600 hover:bg-blue-800 mb-6'
+        disabled={ecuState !== 'Ready'}
+        onClick={handleSaveAndDownload}
+        leftIcon={<Download />}
+      >
+        <Text>Save Energy to Team and Download Data as CSV</Text>
+      </Button>
       <Stack className='h-full min-w-[600px]'>
         <ResponsiveContainer width='100%' height={400}>
           <LineChart width={1000} height={400} data={data} margin={{ top: 0, right: 10, left: 10, bottom: 0 }} syncId='ecu'>
@@ -169,9 +192,6 @@ const EcuChart = ({ energyFrames }: EcuChartProps) => {
           </LineChart>
         </ResponsiveContainer>
       </Stack>
-      <Button type='button' className='bg-blue-600 hover:bg-blue-800' disabled={ecuState !== 'Ready'} onClick={handleDownload} leftIcon={<Download />}>
-        <Text>Download Data as CSV</Text>
-      </Button>
     </ScrollArea>
   );
 };

@@ -13,13 +13,15 @@ const Events = () => {
     <Stack>
       <Title>Events</Title>
       <Group>
-        {events?.map((e, i) => (
-          <Link passHref href={e.path} key={i}>
-            <Card shadow='sm' p='xl' radius='sm' component='a' className='hover:shadow-xl hover:cursor-pointer hover:scale-105 transition'>
-              <Title order={3}>{e.name}</Title>
-            </Card>
-          </Link>
-        ))}
+        {events
+          ?.filter(({ name }) => name !== 'Technical Report')
+          .map((e, i) => (
+            <Link passHref href={e.path} key={i}>
+              <Card shadow='sm' p='xl' radius='sm' component='a' className='hover:shadow-xl hover:cursor-pointer hover:scale-105 transition'>
+                <Title order={3}>{e.name}</Title>
+              </Card>
+            </Link>
+          ))}
       </Group>
       <Group>
         <Title order={2}>Leaderboard</Title>
@@ -43,7 +45,7 @@ const Events = () => {
           clearable
         />
       </Group>
-      <LeaderboardTable sortBy={sort} filters={filters} />
+      <LeaderboardTable sortBy={sort} filters={filters} hideTechnicalReport />
     </Stack>
   );
 };

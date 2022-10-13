@@ -11,8 +11,8 @@ import LapTimeDisplay from './LapTimeDisplay';
 import { getTotalTime } from '../lib/TimeHelpers';
 import { getGymkhanaTimeFromRun } from './GymkhanaTable';
 
-const LeaderboardTable = ({ sortBy, filters }: { sortBy?: string; filters?: Filter[] }) => {
-  const { teams } = useCompetition();
+const LeaderboardTable = ({ sortBy, filters, hideTechnicalReport }: { sortBy?: string; filters?: Filter[]; hideTechnicalReport?: boolean }) => {
+  const { teams, laps } = useCompetition();
 
   const getDragPoints = (team: Team) => {
     const time = Math.min(...team.events.drag);
@@ -80,7 +80,8 @@ const LeaderboardTable = ({ sortBy, filters }: { sortBy?: string; filters?: Filt
 
   const getEfficiencyPoints = (team: Team) => {
     const energy = team.events.efficiency.energy;
-    if (!energy) return 0;
+    const lapsCompleted = team.events.endurance.lapTimes.length;
+    if (!energy || lapsCompleted < laps) return 0;
     const vClass = team.class;
     const vType = team.type;
     const maxEnergy = Math.max(
@@ -109,6 +110,7 @@ const LeaderboardTable = ({ sortBy, filters }: { sortBy?: string; filters?: Filt
   };
 
   const getTechnicalReportPoints = (team: Team) => {
+    if (hideTechnicalReport) return 0;
     const points = team.events.technicalReport;
     const vClass = team.class;
     const vType = team.type;
@@ -159,7 +161,7 @@ const LeaderboardTable = ({ sortBy, filters }: { sortBy?: string; filters?: Filt
         <th>Gymkhana</th>
         <th>Endurance</th>
         <th>Efficiency</th>
-        <th>Technical Report</th>
+        {!hideTechnicalReport && <th>Technical Report</th>}
       </tr>
     </thead>
   );
@@ -178,7 +180,7 @@ const LeaderboardTable = ({ sortBy, filters }: { sortBy?: string; filters?: Filt
             <td>{getGymkhanaPoints(team)}</td>
             <td>{getEndurancePoints(team)}</td>
             <td>{getEfficiencyPoints(team)}</td>
-            <td>{getTechnicalReportPoints(team)}</td>
+            {!hideTechnicalReport && <td>{getTechnicalReportPoints(team)}</td>}
           </tr>
         );
       })}

@@ -35,14 +35,15 @@ const DateTimeInput = (props: DateTimeInputProps) => {
   return (
     <Input.Wrapper required={required} label={label} placeholder={placeHolder}>
       <Group className='flex-nowrap max-w-sm gap-x-1 overflow-x-hidden'>
-        <DatePicker placeholder='Pick date' label='Date' defaultValue={time} onChange={onDateChange} className='grow' required dropdownType='modal' />
+        <DatePicker placeholder='Pick date' label='Date' value={time} onChange={onDateChange} className='grow' required dropdownType='modal' />
         <TimeInput
           placeholder='Pick time'
           format='12'
           label='Time'
-          defaultValue={time}
+          value={time}
           onChange={onTimeChange}
-          className='shrink min-w-0'
+          className='shrink min-w-0 overflow-x-hidden'
+          classNames={{ controls: 'overflow-x-clip' }}
           withSeconds
           required
         />

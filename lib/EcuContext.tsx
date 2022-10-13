@@ -36,6 +36,7 @@ interface IEcuContext {
   energyFrames: EnergyFrame[];
   getEnergyFrames: (r?: [s: number, e: number]) => void;
   clearEnergyFrames: () => void;
+  saveTeamEnergy: () => void;
   resetEcu: () => void;
   timeDelta: number;
 }
@@ -79,13 +80,6 @@ export const EcuProvider = ({ children }: EcuProviderProps) => {
     energyFramesRef.current = [];
     setEnergyFrames([]);
   }, []);
-
-  const updateTeamEnergy = useCallback(() => {
-    const newTeam = { ...team };
-    newTeam.events.endurance.energy = energyFrames.reduce((p, c) => p + c.totalEnergy, 0) / 60 / 60;
-    updateTeam(newTeam);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [energyFrames, team]);
 
   useEffect(() => {
     energyFramesRef.current = energyFrames;
@@ -225,7 +219,6 @@ export const EcuProvider = ({ children }: EcuProviderProps) => {
             getEnergyFrames([response.energy.frames[response.energy.frames.length - 1].endTimestamp + 1, timeRange.current[1]]);
           else {
             timeRange.current = [0, 0];
-            updateTeamEnergy();
           }
         }
         if (response.timestamp !== undefined) setTimeDelta(new Date(Date.now() / 1000 - response.timestamp).getTime());
@@ -234,7 +227,7 @@ export const EcuProvider = ({ children }: EcuProviderProps) => {
         sendRequest(activeRequest.current);
       }
     },
-    [ecuInfo, getEnergyFrames, sendRequest, updateTeamEnergy]
+    [ecuInfo, getEnergyFrames, sendRequest]
   );
 
   const inputHandler = useCallback(
