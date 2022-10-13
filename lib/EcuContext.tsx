@@ -12,9 +12,9 @@ import {
 } from './evo_proto';
 import useNotifications from './NotificationContext';
 import { ConfigContent, StatusResponse, Response, Request, EnergyFrame } from './proto/evolocity';
-import { PortState, SerialMessage, useSerial } from './SerialProvider';
+import { SerialMessage, useSerial } from './SerialProvider';
 import Team from './TeamInterface';
-import { Text, useMantineDefaultProps } from '@mantine/core';
+import { Text } from '@mantine/core';
 import * as _m0 from 'protobufjs/minimal';
 
 export type EcuState = 'Disconnected' | 'Fetching Status' | 'Fetching Config' | 'Sending Config' | 'Fetching Energy' | 'Ready';
