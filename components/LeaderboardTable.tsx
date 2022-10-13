@@ -32,6 +32,7 @@ const LeaderboardTable = ({ sortBy, filters, hideTechnicalReport }: { sortBy?: s
         .map((t) => Math.min(...t.events.drag))
         .filter((t) => t && t !== Infinity)
     );
+    if (time === minTime || maxTime === minTime) return 100;
     return Math.round(((maxTime - time) / (maxTime - minTime)) * 100);
   };
 
@@ -54,6 +55,7 @@ const LeaderboardTable = ({ sortBy, filters, hideTechnicalReport }: { sortBy?: s
         .map((t) => calcFastestGymkhanaTime(t.events.gymkhana.runs))
         .filter((t) => t > 0 && t !== Infinity)
     );
+    if (time === minTime || maxTime === minTime) return 100;
     return Math.round(((maxTime - time) / (maxTime - minTime)) * 100);
   };
 
@@ -75,6 +77,7 @@ const LeaderboardTable = ({ sortBy, filters, hideTechnicalReport }: { sortBy?: s
         .map((t) => getTotalTime(t))
         .filter((t) => t > 0 && t !== Infinity)
     );
+    if (time === minTime || maxTime === minTime) return 100;
     return Math.round(((maxTime - time) / (maxTime - minTime)) * 100);
   };
 
@@ -106,6 +109,7 @@ const LeaderboardTable = ({ sortBy, filters, hideTechnicalReport }: { sortBy?: s
           }) => energy
         )
     );
+    if (energy === maxEnergy || maxEnergy === minEnergy) return 100;
     return ((maxEnergy - energy) / (maxEnergy - minEnergy)) * 100;
   };
 

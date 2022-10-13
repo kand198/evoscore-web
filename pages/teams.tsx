@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { Plus } from 'tabler-icons-react';
 import { useCompetition } from '../lib/CompetitionProvider';
 import { VehicleClass } from '../lib/proto/evolocity';
-import Team, { vehicleClassMap, vehicleTypeMap } from '../lib/TeamInterface';
+import Team, { emptyTeam, vehicleClassMap, vehicleTypeMap } from '../lib/TeamInterface';
 
 const Teams = () => {
   const { teams, addTeam, removeTeam, updateTeam } = useCompetition();
@@ -16,12 +16,12 @@ const Teams = () => {
       name: '',
       school: '',
       class: vehicleClassMap.get(VehicleClass.STANDARD),
-      type: undefined,
+      type: null,
     },
   });
 
   const handleAddTeamClick = () => {
-    setEditTeam({ ...addTeam() });
+    setEditTeam({ ...emptyTeam(), id: teams.map((t) => t.id).reduce((maxId, id) => Math.max(maxId, id), -1) + 1 } as Team);
   };
 
   const submitEdit = (values: { number: number; school: string; class: string; name: string; type: string }) => {
@@ -36,6 +36,7 @@ const Teams = () => {
       class: vehicleClass,
       type: vehicleType,
     };
+    console.log(newEditTeam);
     updateTeam(newEditTeam);
     setEditTeam(undefined);
   };
@@ -46,7 +47,7 @@ const Teams = () => {
   };
 
   const exitEdit = () => {
-    if (editTeam.name === '' && editTeam.school === '') {
+    if (!editTeam || (editTeam.name === '' && editTeam.school === '')) {
       removeTeam(editTeam);
     }
     setEditTeam(undefined);
@@ -55,11 +56,11 @@ const Teams = () => {
   useEffect(() => {
     if (editTeam) {
       form.setValues({
-        number: editTeam.number !== -1 ? editTeam.number : undefined,
-        name: editTeam.name,
-        school: editTeam.school,
-        class: editTeam.class.toString(),
-        type: editTeam.type.toString(),
+        number: editTeam.number !== -1 ? editTeam.number : null,
+        name: editTeam.name ?? '',
+        school: editTeam.school ?? '',
+        class: editTeam.class?.toString() ?? '',
+        type: editTeam.type?.toString() ?? '',
       });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps

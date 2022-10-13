@@ -1,13 +1,14 @@
-import { Button, Stack, Text, TextInput, Title } from '@mantine/core';
+import { Button, Center, Group, Modal, Stack, Text, TextInput, Title } from '@mantine/core';
 import { DatePicker } from '@mantine/dates';
 import { useForm } from '@mantine/form';
 import { useEffect, useMemo, useState } from 'react';
 import { useCompetition } from '../lib/CompetitionProvider';
 
 const Home = () => {
-  const { metadata, setMetadata, laps, setLaps, teams, setTeams } = useCompetition();
+  const { metadata, setMetadata, laps, setLaps, teams, setTeams, reset: resetCompetition } = useCompetition();
 
   const [saved, setSaved] = useState(false);
+  const [modalOpened, setModalOpened] = useState(false);
 
   const form = useForm({
     initialValues: {
@@ -128,8 +129,26 @@ const Home = () => {
           <Button type='button' onClick={() => uploadCompetiton()} className='bg-red-600 hover:bg-red-800'>
             Upload
           </Button>
+          <Button type='button' onClick={() => setModalOpened(true)} className='bg-red-600 hover:bg-red-800'>
+            Reset
+          </Button>
         </Stack>
       </form>
+      <Modal opened={modalOpened} onClose={() => setModalOpened(false)} title='Reset Competition'>
+        <Stack>
+          <Text>Are you sure you want to reset the competition? This will delete all data. Please ensure that you have saved.</Text>
+          <Center>
+            <Group>
+              <Button onClick={() => setModalOpened(false)} className='bg-green-600 hover:bg-green-800'>
+                Cancel
+              </Button>
+              <Button onClick={() => resetCompetition()} className='bg-red-600 hover:bg-red-800'>
+                Reset
+              </Button>
+            </Group>
+          </Center>
+        </Stack>
+      </Modal>
     </Stack>
   );
 };

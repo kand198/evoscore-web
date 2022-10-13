@@ -1,4 +1,4 @@
-import { createContext, PropsWithChildren, useContext, useEffect, useState } from 'react';
+import { createContext, PropsWithChildren, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import Team, { emptyTeam } from './TeamInterface';
 
 export type CompetitionMetadata = {
@@ -15,10 +15,11 @@ export interface CompetitionContextValue {
   laps: number;
   setLaps: (number) => void;
   teams: Team[];
-  addTeam: () => Team;
+  addTeam: (team: Team) => void;
   removeTeam: (Team) => void;
   updateTeam: (Team: Team) => void;
   setTeams: (Teams) => void;
+  reset: () => void;
 }
 
 export const CompetitionContext = createContext<CompetitionContextValue>({
@@ -27,10 +28,11 @@ export const CompetitionContext = createContext<CompetitionContextValue>({
   laps: 0,
   setLaps: () => {},
   teams: [],
-  addTeam: () => emptyTeam(),
+  addTeam: () => {},
   removeTeam: () => {},
   updateTeam: () => {},
   setTeams: () => {},
+  reset: () => {},
 });
 
 export const useCompetition = () => useContext(CompetitionContext);
@@ -62,45 +64,57 @@ const CompetitionProvider = ({ children }: PropsWithChildren<CompetitionContextP
     if (typeof window !== 'undefined' && teams) localStorage.setItem('competitionTeams', JSON.stringify(teams));
   }, [teams]);
 
-  const getTeamIds = () => teams?.map((t) => t.id);
+  const getTeamIds = useCallback(() => teams?.map((t) => t.id), [teams]);
 
-  const addTeam = () => {
-    const newTeam = {
-      ...emptyTeam(),
-      id: getTeamIds().reduce((maxId, id) => Math.max(maxId, id), -1) + 1,
-    };
-    setTeams([...teams, newTeam]);
-    return newTeam;
-  };
-
-  const removeTeam = (team: Team) => {
-    setTeams(teams?.filter((t) => t.id !== team.id));
-  };
-
-  const updateTeam = (team: Team) => {
-    if (!getTeamIds().includes(team.id)) {
-      return;
-    }
-    setTeams((ts) => ts?.map((t) => (t.id === team.id ? team : t)));
-  };
-
-  return (
-    <CompetitionContext.Provider
-      value={{
-        metadata,
-        setMetadata,
-        laps,
-        setLaps,
-        teams,
-        addTeam,
-        removeTeam,
-        updateTeam,
-        setTeams,
-      }}
-    >
-      {children}
-    </CompetitionContext.Provider>
+  const addTeam = useCallback(
+    (team: Team) => {
+      if (teams.map((t) => t.id).includes(team.id)) return;
+      setTeams((ts) => [...ts, team]);
+    },
+    [teams]
   );
+
+  const removeTeam = useCallback(
+    (team: Team) => {
+      setTeams(teams?.filter((t) => t.id !== team.id));
+    },
+    [teams]
+  );
+
+  const updateTeam = useCallback(
+    (team: Team) => {
+      if (!team || team.id === undefined || team.id === null || !team.number) return;
+      if (!getTeamIds().includes(team.id)) {
+        addTeam(team);
+      }
+      setTeams((ts) => ts?.map((t) => (t.id === team.id ? team : t)));
+    },
+    [addTeam, getTeamIds]
+  );
+
+  const reset = () => {
+    setMetadata({ name: '' });
+    setLaps(0);
+    setTeams([]);
+  };
+
+  const value = useMemo(
+    () => ({
+      metadata,
+      setMetadata,
+      laps,
+      setLaps,
+      teams,
+      addTeam,
+      removeTeam,
+      updateTeam,
+      setTeams,
+      reset,
+    }),
+    [metadata, laps, teams, addTeam, removeTeam, updateTeam]
+  );
+
+  return <CompetitionContext.Provider value={value}>{children}</CompetitionContext.Provider>;
 };
 
 export default CompetitionProvider;
