@@ -22,17 +22,17 @@ const EcuChart = ({ energyFrames }: EcuChartProps) => {
   };
 
   const getCurrentLimit = () => {
-    if (ecuTeam?.class === VehicleClass.STANDARD) return 25;
-    if (ecuTeam?.class === VehicleClass.OPEN) return 50;
-    if (ecuTeam?.class === VehicleClass.COMPETITION) return 90;
+    if (ecuTeam?.class === VehicleClass.STANDARD) return 30;
+    if (ecuTeam?.class === VehicleClass.OPEN) return 60;
+    if (ecuTeam?.class === VehicleClass.COMPETITION) return 100;
     else return 120;
   };
 
   const getPowerLimit = () => {
-    if (ecuTeam?.class === VehicleClass.STANDARD) return 500;
-    if (ecuTeam?.class === VehicleClass.OPEN) return 1200;
-    if (ecuTeam?.class === VehicleClass.COMPETITION) return 3500;
-    else return 5000;
+    if (ecuTeam?.class === VehicleClass.STANDARD) return 1000;
+    if (ecuTeam?.class === VehicleClass.OPEN) return 3000;
+    if (ecuTeam?.class === VehicleClass.COMPETITION) return 8000;
+    else return 10000;
   };
 
   const discontinuityFilter = (v: number, i: number, a: EnergyFrame[]) => {
@@ -46,7 +46,7 @@ const EcuChart = ({ energyFrames }: EcuChartProps) => {
   const getCurrent = (eF: EnergyFrame) => eF.averageCurrent / 1000;
   const getPower = (eF: EnergyFrame) => getVoltage(eF) * getCurrent(eF);
   const getTimeDeltaSeconds = (p: EnergyFrame, c: EnergyFrame) => c.endTimestamp - p.endTimestamp;
-  const getEnergy = (c: EnergyFrame) => c.totalEnergy / 60 / 60 || Math.random();
+  const getEnergy = (c: EnergyFrame) => c.totalEnergy / 60 / 60;
 
   const data = energyFrames
     .sort((a, b) => a.endTimestamp - b.endTimestamp)
