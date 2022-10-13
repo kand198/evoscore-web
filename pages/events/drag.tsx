@@ -35,7 +35,7 @@ const Drag = () => {
           placeholder='All items'
           value={filters.filter((f) => f.active).map((filter) => filter.value)}
           onChange={(val) => setFilters(filters.map((filter) => (val.includes(filter.value) ? { ...filter, active: true } : { ...filter, active: false })))}
-          data={filters}
+          data={filters.map(({ value, label }) => ({ value, label }))}
           clearButtonLabel='Clear selection'
           clearable
         />
