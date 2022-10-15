@@ -77,7 +77,7 @@ const EnduranceTable = ({ sortBy, filters }: { sortBy?: string; filters?: Filter
   const EnduranceHeader = (
     <thead>
       <tr>
-        <th>ID #</th>
+        <th>Race #</th>
         <th>Name</th>
         <th>School</th>
         <th>Class</th>
@@ -95,7 +95,7 @@ const EnduranceTable = ({ sortBy, filters }: { sortBy?: string; filters?: Filter
     <tbody>
       {sortedTeams?.map((team) => (
         <tr key={team.id} className='hover:cursor-pointer' onClick={() => setEditTeam(team)}>
-          <td>{team.id}</td>
+          <td>{team.number}</td>
           <td>{team.name}</td>
           <td>{team.school}</td>
           <td>{vehicleClassMap.get(team.class)}</td>
@@ -168,7 +168,11 @@ const EnduranceTable = ({ sortBy, filters }: { sortBy?: string; filters?: Filter
             <Button type='submit' className='bg-blue-600 hover:bg-blue-800'>
               Submit
             </Button>
-            <Button className='bg-blue-600 hover:bg-blue-800' onClick={() => form.insertListItem('lapTimes', { time: 0 })}>
+            <Button
+              className='bg-blue-600 hover:bg-blue-800'
+              onClick={() => form.insertListItem('lapTimes', { time: 0 })}
+              disabled={form.values.lapTimes.length >= laps}
+            >
               Add Time
             </Button>
           </Group>

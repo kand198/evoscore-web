@@ -105,13 +105,15 @@ const EcuChart = ({ energyFrames }: EcuChartProps) => {
               },
             },
           };
-          updateTeam(newTeam);
-          console.log(newTeam.events.efficiency.energy);
+          if (newTeam) {
+            updateTeam(newTeam);
+            console.log(newTeam.events.efficiency.energy);
+          }
           const blob = new Blob([output], { type: 'text/csv' });
           const url = URL.createObjectURL(blob);
           const a = document.createElement('a');
           a.href = url;
-          a.download = `${ecuTeam?.number ? ecuTeam?.number + '-' : ''}${ecuTeam?.name.replace(' ', '-') ?? 'unknown-team'}-data.csv`;
+          a.download = `${ecuTeam?.number ? ecuTeam?.number + '-' : ''}${ecuTeam?.name.replace(' ', '-') ?? 'unknown-team'}-endurance-data.csv`;
           a.click();
           URL.revokeObjectURL(url);
         }

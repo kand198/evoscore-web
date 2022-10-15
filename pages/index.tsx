@@ -142,7 +142,13 @@ const Home = () => {
               <Button onClick={() => setModalOpened(false)} className='bg-green-600 hover:bg-green-800'>
                 Cancel
               </Button>
-              <Button onClick={() => resetCompetition()} className='bg-red-600 hover:bg-red-800'>
+              <Button
+                onClick={() => {
+                  resetCompetition();
+                  setModalOpened(false);
+                }}
+                className='bg-red-600 hover:bg-red-800'
+              >
                 Reset
               </Button>
             </Group>

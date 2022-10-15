@@ -22,7 +22,7 @@ const Endurance = () => {
       </Breadcrumbs>
       <Group className='items-center'>
         <Title>Endurance</Title>
-        <NumberInput value={laps} onChange={(val) => setLaps(val)} label='Number of Laps' />
+        {/* <NumberInput value={laps} onChange={(val) => setLaps(val)} label='Number of Laps' /> */}
         <Select
           label='Sort By'
           data={[

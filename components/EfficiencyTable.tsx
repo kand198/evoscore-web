@@ -84,7 +84,7 @@ const EfficiencyTable = ({ sortBy, filters }: { sortBy?: string; filters?: Filte
   const EfficiencyHeader = (
     <thead>
       <tr>
-        <th>ID #</th>
+        <th>Race #</th>
         <th>Name</th>
         <th>School</th>
         <th>Class</th>
@@ -103,12 +103,12 @@ const EfficiencyTable = ({ sortBy, filters }: { sortBy?: string; filters?: Filte
             className={`hover:cursor-pointer ${getNumLaps(team) >= laps ? 'bg-green-200 hover:bg-green-400/50' : 'bg-red-200 hover:bg-red-400/50'}`}
             onClick={() => setEditTeam(team)}
           >
-            <td>{team.id}</td>
+            <td>{team.number}</td>
             <td>{team.name}</td>
             <td>{team.school}</td>
             <td>{vehicleClassMap.get(team.class)}</td>
             <td>{vehicleTypeMap.get(team.type)}</td>
-            <td>{team.events?.efficiency.energy}</td>
+            <td>{team.events?.efficiency.energy?.toFixed(2)}</td>
             <td>
               {getNumLaps(team)} / {laps}
             </td>
