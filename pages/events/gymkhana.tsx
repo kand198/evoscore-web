@@ -5,7 +5,7 @@ import GymkhanaTable from '../../components/GymkhanaTable';
 import { defaultFilters, Filter } from '../../lib/Filters';
 
 const Gymkhana = () => {
-  const [sort, setSort] = useState('number');
+  const [sort, setSort] = useState('time');
   const [filters, setFilters] = useState<Filter[]>(defaultFilters);
 
   return (

@@ -5,7 +5,7 @@ import DragTable from '../../components/DragTable';
 import { defaultFilters, Filter } from '../../lib/Filters';
 
 const Drag = () => {
-  const [sort, setSort] = useState('number');
+  const [sort, setSort] = useState('time');
   const [filters, setFilters] = useState<Filter[]>(defaultFilters);
 
   return (

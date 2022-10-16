@@ -5,7 +5,7 @@ import EfficiencyTable from '../../components/EfficiencyTable';
 import { defaultFilters, Filter } from '../../lib/Filters';
 
 const Efficiency = () => {
-  const [sort, setSort] = useState('number');
+  const [sort, setSort] = useState('energy');
   const [filters, setFilters] = useState<Filter[]>(defaultFilters);
 
   return (
