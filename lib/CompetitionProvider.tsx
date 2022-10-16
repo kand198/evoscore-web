@@ -17,7 +17,7 @@ export interface CompetitionContextValue {
   teams: Team[];
   addTeam: (team: Team) => void;
   removeTeam: (Team) => void;
-  updateTeam: (Team: Team) => void;
+  updateTeam: (Team: Team) => boolean;
   setTeams: (Teams) => void;
   reset: () => void;
 }
@@ -25,12 +25,12 @@ export interface CompetitionContextValue {
 export const CompetitionContext = createContext<CompetitionContextValue>({
   metadata: { name: '' },
   setMetadata: () => {},
-  laps: 0,
+  laps: 1,
   setLaps: () => {},
   teams: [],
   addTeam: () => {},
   removeTeam: () => {},
-  updateTeam: () => {},
+  updateTeam: () => false,
   setTeams: () => {},
   reset: () => {},
 });
@@ -41,7 +41,7 @@ interface CompetitionContextProps {}
 
 const CompetitionProvider = ({ children }: PropsWithChildren<CompetitionContextProps>) => {
   const [metadata, setMetadata] = useState<CompetitionMetadata>({ name: '' });
-  const [laps, setLaps] = useState<number>(0);
+  const [laps, setLaps] = useState<number>(1);
   const [teams, setTeams] = useState<Team[] | undefined>(undefined);
 
   useEffect(() => {
@@ -65,6 +65,7 @@ const CompetitionProvider = ({ children }: PropsWithChildren<CompetitionContextP
   }, [teams]);
 
   const getTeamIds = useCallback(() => teams?.map((t) => t.id), [teams]);
+  const getTeamNumbers = useCallback(() => teams?.map((t) => t.number), [teams]);
 
   const addTeam = useCallback(
     (team: Team) => {
@@ -83,8 +84,9 @@ const CompetitionProvider = ({ children }: PropsWithChildren<CompetitionContextP
 
   const updateTeam = useCallback(
     (team: Team) => {
-      if (!team || team.id === undefined || team.id === null || !team.number) return;
+      if (!team || team.id === undefined || team.id === null || !team.number) return false;
       if (!getTeamIds().includes(team.id)) {
+        if (getTeamNumbers().includes(team.number)) return false;
         addTeam(team);
       }
       setTeams((ts) => ts?.map((t) => (t.id === team.id ? team : t)));
@@ -94,16 +96,18 @@ const CompetitionProvider = ({ children }: PropsWithChildren<CompetitionContextP
 
   const reset = () => {
     setMetadata({ name: '' });
-    setLaps(0);
+    setLaps(1);
     setTeams([]);
   };
+
+  const fakeSetLaps = useCallback(() => setLaps(1), []);
 
   const value = useMemo(
     () => ({
       metadata,
       setMetadata,
       laps,
-      setLaps,
+      setLaps: fakeSetLaps,
       teams,
       addTeam,
       removeTeam,
@@ -111,7 +115,7 @@ const CompetitionProvider = ({ children }: PropsWithChildren<CompetitionContextP
       setTeams,
       reset,
     }),
-    [metadata, laps, teams, addTeam, removeTeam, updateTeam]
+    [metadata, laps, fakeSetLaps, teams, addTeam, removeTeam, updateTeam]
   );
 
   return <CompetitionContext.Provider value={value}>{children}</CompetitionContext.Provider>;

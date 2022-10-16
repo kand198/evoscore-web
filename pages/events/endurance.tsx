@@ -7,7 +7,7 @@ import { defaultFilters, Filter } from '../../lib/Filters';
 
 const Endurance = () => {
   const { laps, setLaps } = useCompetition();
-  const [sort, setSort] = useState('number');
+  const [sort, setSort] = useState('time');
   const [filters, setFilters] = useState<Filter[]>([...defaultFilters]);
 
   return (
@@ -22,7 +22,7 @@ const Endurance = () => {
       </Breadcrumbs>
       <Group className='items-center'>
         <Title>Endurance</Title>
-        <NumberInput value={laps} onChange={(val) => setLaps(val)} label='Number of Laps' />
+        {/* <NumberInput value={laps} onChange={(val) => setLaps(val)} label='Number of Laps' /> */}
         <Select
           label='Sort By'
           data={[

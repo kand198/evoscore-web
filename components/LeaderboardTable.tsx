@@ -1,13 +1,7 @@
-import { ActionIcon, Button, Group, Modal, NumberInput, ScrollArea, Space, Table } from '@mantine/core';
-import { useForm } from '@mantine/form';
-import { useEffect, useState } from 'react';
+import { ScrollArea, Space, Table } from '@mantine/core';
 import { useCompetition } from '../lib/CompetitionProvider';
-import EventInterface from '../lib/EventInterface';
 import Team, { vehicleClassMap, vehicleTypeMap } from '../lib/TeamInterface';
 import { Filter, teamMeetsFilters } from '../lib/Filters';
-import LapTimeInput from './LapTimeInput';
-import { Trash } from 'tabler-icons-react';
-import LapTimeDisplay from './LapTimeDisplay';
 import { getTotalTime } from '../lib/TimeHelpers';
 import { getGymkhanaTimeFromRun } from './GymkhanaTable';
 
@@ -33,7 +27,7 @@ const LeaderboardTable = ({ sortBy, filters, hideTechnicalReport }: { sortBy?: s
         .filter((t) => t && t !== Infinity)
     );
     if (time === minTime || maxTime === minTime) return 100;
-    return Math.round(((maxTime - time) / (maxTime - minTime)) * 100);
+    return ((maxTime - time) / (maxTime - minTime)) * 100;
   };
 
   const getGymkhanaPoints = (team: Team) => {
@@ -56,7 +50,7 @@ const LeaderboardTable = ({ sortBy, filters, hideTechnicalReport }: { sortBy?: s
         .filter((t) => t > 0 && t !== Infinity)
     );
     if (time === minTime || maxTime === minTime) return 100;
-    return Math.round(((maxTime - time) / (maxTime - minTime)) * 100);
+    return ((maxTime - time) / (maxTime - minTime)) * 100;
   };
 
   const getEndurancePoints = (team: Team) => {
@@ -78,7 +72,7 @@ const LeaderboardTable = ({ sortBy, filters, hideTechnicalReport }: { sortBy?: s
         .filter((t) => t > 0 && t !== Infinity)
     );
     if (time === minTime || maxTime === minTime) return 100;
-    return Math.round(((maxTime - time) / (maxTime - minTime)) * 100);
+    return ((maxTime - time) / (maxTime - minTime)) * 100;
   };
 
   const getEfficiencyPoints = (team: Team) => {
@@ -97,6 +91,7 @@ const LeaderboardTable = ({ sortBy, filters, hideTechnicalReport }: { sortBy?: s
             },
           }) => energy
         )
+        .filter((e) => e > 0 && e !== Infinity)
     );
     const minEnergy = Math.min(
       ...teams
@@ -108,8 +103,9 @@ const LeaderboardTable = ({ sortBy, filters, hideTechnicalReport }: { sortBy?: s
             },
           }) => energy
         )
+        .filter((e) => e > 0 && e !== Infinity)
     );
-    if (energy === maxEnergy || maxEnergy === minEnergy) return 100;
+    if (energy === minEnergy || maxEnergy === minEnergy) return 100;
     return ((maxEnergy - energy) / (maxEnergy - minEnergy)) * 100;
   };
 
@@ -179,12 +175,12 @@ const LeaderboardTable = ({ sortBy, filters, hideTechnicalReport }: { sortBy?: s
             <td>{team.school}</td>
             <td>{vehicleClassMap.get(team.class)}</td>
             <td>{vehicleTypeMap.get(team.type)}</td>
-            <td>{getTotalPoints(team)}</td>
-            <td>{getDragPoints(team)}</td>
-            <td>{getGymkhanaPoints(team)}</td>
-            <td>{getEndurancePoints(team)}</td>
-            <td>{getEfficiencyPoints(team)}</td>
-            {!hideTechnicalReport && <td>{getTechnicalReportPoints(team)}</td>}
+            <td>{getTotalPoints(team).toFixed(2)}</td>
+            <td>{getDragPoints(team).toFixed(2)}</td>
+            <td>{getGymkhanaPoints(team).toFixed(2)}</td>
+            <td>{getEndurancePoints(team).toFixed(2)}</td>
+            <td>{getEfficiencyPoints(team).toFixed(2)}</td>
+            {!hideTechnicalReport && <td>{getTechnicalReportPoints(team).toFixed(2)}</td>}
           </tr>
         );
       })}
