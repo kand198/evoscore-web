@@ -51,9 +51,6 @@ const Teams = () => {
   };
 
   const exitEdit = () => {
-    if (!editTeam || (editTeam.name === '' && editTeam.school === '')) {
-      removeTeam(editTeam);
-    }
     setEditTeam(undefined);
   };
 
