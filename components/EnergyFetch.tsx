@@ -5,6 +5,7 @@ import { Activity } from 'tabler-icons-react';
 import useEcu from '../lib/EcuContext';
 import { getTimeRange } from '../lib/TimeHelpers';
 import DateTimeInput from './DateTimeInput';
+import FlashChecker from './FlashChecker';
 
 const EnergyFetch = () => {
   const { ecuTeam, ecuState, getEnergyFrames, clearEnergyFrames } = useEcu();
@@ -41,6 +42,7 @@ const EnergyFetch = () => {
       >
         <Text>Get Energy</Text>
       </Button>
+      <FlashChecker />
     </Group>
   );
 };
