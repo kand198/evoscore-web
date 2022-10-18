@@ -9,6 +9,7 @@ type CheckState = 'Not Checked' | 'Checking' | 'Passed' | 'Failed';
 const FlashChecker = () => {
   const { energyFrames, getEnergyFrames, clearEnergyFrames, ecuState } = useEcu();
   const [checkState, setCheckState] = useState<CheckState>('Not Checked');
+  const [flashCheckTimestamp, setFlashCheckTimestamp] = useState<number | undefined>(undefined);
 
   const getLeftIcon = () => {
     switch (checkState) {
@@ -24,13 +25,15 @@ const FlashChecker = () => {
   };
 
   const checkFlash = (clear?: boolean) => {
-    if (clear) clearEnergyFrames();
-    setCheckState('Checking');
     const now = Date.now();
+    if (clear) {
+      clearEnergyFrames();
+    }
+    setCheckState('Checking');
     getEnergyFrames([now / 1000 - 7, now / 1000]);
   };
 
-  const timeout = useTimeout(() => checkFlash(), 5000);
+  const timeout = useTimeout(() => checkFlash(), 3000);
 
   useEffect(() => {
     if (checkState === 'Checking') {
@@ -39,6 +42,13 @@ const FlashChecker = () => {
         setCheckState('Passed');
       } else {
         timeout.start();
+        if (!flashCheckTimestamp) {
+          setFlashCheckTimestamp(Date.now());
+        }
+        if (flashCheckTimestamp < Date.now() - 15000) {
+          setCheckState('Failed');
+          setFlashCheckTimestamp(undefined);
+        }
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
