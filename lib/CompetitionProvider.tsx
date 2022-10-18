@@ -85,13 +85,23 @@ const CompetitionProvider = ({ children }: PropsWithChildren<CompetitionContextP
   const updateTeam = useCallback(
     (team: Team) => {
       if (!team || team.id === undefined || team.id === null || !team.number) return false;
+
+      if (getTeamNumbers().includes(team.number)) {
+        if (!getTeamIds().includes(team.id)) return false;
+        const teamsMatchingNumber = teams.filter((t) => t.number === team.number);
+        if (teamsMatchingNumber.length > 1) return false;
+        if (teamsMatchingNumber[0].id !== team.id) return false;
+        addTeam(team);
+      }
+
       if (!getTeamIds().includes(team.id)) {
         if (getTeamNumbers().includes(team.number)) return false;
         addTeam(team);
       }
       setTeams((ts) => ts?.map((t) => (t.id === team.id ? team : t)));
+      return true;
     },
-    [addTeam, getTeamIds]
+    [addTeam, getTeamIds, getTeamNumbers, teams]
   );
 
   const reset = () => {

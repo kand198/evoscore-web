@@ -26,11 +26,6 @@ const Teams = () => {
 
   const submitEdit = (values: { number: number; school: string; class: string; name: string; type: string }) => {
     const { number, school, name } = values;
-    const teamNumbers = teams.map((t) => t.number);
-    if (teamNumbers.includes(number)) {
-      form.setErrors({ number: 'Team number already exists' });
-      return;
-    }
 
     const vehicleClass = parseInt(values.class);
     const vehicleType = parseInt(values.type);
@@ -43,6 +38,7 @@ const Teams = () => {
       type: vehicleType,
     };
     if (updateTeam(newEditTeam)) setEditTeam(undefined);
+    else form.setErrors({ number: 'Team number already exists' });
   };
 
   const deleteEditTeam = () => {
@@ -51,6 +47,9 @@ const Teams = () => {
   };
 
   const exitEdit = () => {
+    if (!editTeam || (editTeam.name === '' && editTeam.school === '')) {
+      removeTeam(editTeam);
+    }
     setEditTeam(undefined);
   };
 
